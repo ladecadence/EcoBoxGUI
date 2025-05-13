@@ -19,7 +19,7 @@ func main() {
 	appState := appstate.New("es")
 
 	// QR Scanner
-	data := make(chan []uint8)
+	qrData := make(chan []uint8)
 	scanner, err := ep9000.New("/dev/ttyACM0", 115200)
 	if err != nil {
 		panic(err)
@@ -41,7 +41,7 @@ func main() {
 	// listen to scanner
 	go func() {
 		for {
-			err := scanner.Listen(data)
+			err := scanner.Listen(qrData)
 			if err != nil {
 				panic(err)
 			}
@@ -64,7 +64,7 @@ func main() {
 
 			// QR Scanner data
 			select {
-			case recv := <-data:
+			case recv := <-qrData:
 				fmt.Printf("QR Data: %s\n", recv)
 				if appState.State() == appstate.StateWelcome {
 					user, err := api.GetUser(strings.TrimSpace(string(recv)))
