@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -20,7 +19,7 @@ func main() {
 
 	// QR Scanner
 	qrData := make(chan []uint8)
-	scanner, err := ep9000.New("/dev/ttyACM0", 115200)
+	scanner, err := ep9000.New("/dev/ttyS1", 115200)
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +37,7 @@ func main() {
 	mainContainer := components.NewWelcome(appState.Lang(), appState.SetLang).Container
 	mainWindow.SetContent(mainContainer)
 
-	// listen to scanner
+	// listen to scanner thread
 	go func() {
 		for {
 			err := scanner.Listen(qrData)
@@ -48,7 +47,7 @@ func main() {
 		}
 	}()
 
-	// check GUI state and hardware events
+	// check appState and hardware events
 	go func() {
 		for {
 			// AppState
@@ -63,8 +62,9 @@ func main() {
 			}
 
 			// QR Scanner data
-			select {
-			case recv := <-qrData:
+			// select {
+			// case recv := <-qrData:
+			for recv := range qrData {
 				fmt.Printf("QR Data: %s\n", recv)
 				if appState.State() == appstate.StateWelcome {
 					user, err := api.GetUser(strings.TrimSpace(string(recv)))
@@ -76,9 +76,11 @@ func main() {
 						fyne.Do(func() { mainWindow.SetContent(mainContainer) })
 					}
 				}
-			default:
-				time.Sleep(time.Millisecond * 10)
 			}
+			// default:
+			// 	// to free the cpu
+			// 	time.Sleep(time.Millisecond * 10)
+			// }
 		}
 	}()
 
