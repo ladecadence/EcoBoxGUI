@@ -15,8 +15,8 @@ type User struct {
 }
 
 var testUsers = []User{
-	{ID: "1234", Name: "Perico", Surname: "De los palotes", Tuppers: []Tupper{Tupper{ID: "tuper1", Model: 0}}},
-	{ID: "5678", Name: "Manolo", Surname: "El del bombo"},
+	{ID: "d343b80c-ae82-41f5-ad77-7a32d1be85e2", Name: "Perico", Surname: "De los palotes", Tuppers: []Tupper{{ID: "tuper1", Model: 0}}},
+	{ID: "898ceaf8-2b51-4a4b-8055-d04384620dc9", Name: "Manolo", Surname: "El del bombo"},
 }
 
 func GetUser(id string) (User, error) {

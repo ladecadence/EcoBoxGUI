@@ -10,22 +10,36 @@ import (
 )
 
 type Welcome struct {
-	Container *fyne.Container
+	Container    *fyne.Container
+	labelWelcome *canvas.Text
+	labelInfo    *canvas.Text
+	lang         string
+	langBar      *LangBar
+	setLang      func(string)
 }
 
-func NewWelcome(lang string) *Welcome {
-	w := Welcome{}
+func NewWelcome(lang string, setlang func(string)) *Welcome {
+	w := Welcome{lang: lang, setLang: setlang}
+	w.langBar = NewLangBar(w.UpdateLanguage)
 	logo := canvas.NewImageFromFile("res/ecobox.svg")
 	logo.FillMode = canvas.ImageFillOriginal
 	spacer := layout.NewSpacer()
 	spacer.Resize(fyne.NewSize(1000, 100))
-	labelWelcome := canvas.NewText(languages.GetString("welcome.welcome", lang), theme.Color(theme.ColorNameForeground))
-	labelWelcome.TextSize = 50
-	labelWelcome.Alignment = fyne.TextAlignCenter
-	labelInfo := canvas.NewText(languages.GetString("welcome.info", lang), theme.Color(theme.ColorNameForeground))
-	labelInfo.TextSize = 30
-	labelInfo.Alignment = fyne.TextAlignCenter
-	w.Container = container.NewVBox(logo, spacer, labelWelcome, labelInfo)
+	w.labelWelcome = canvas.NewText(languages.GetString("welcome.welcome", lang), theme.Color(theme.ColorNameForeground))
+	w.labelWelcome.TextSize = 20
+	w.labelWelcome.Alignment = fyne.TextAlignCenter
+	w.labelInfo = canvas.NewText(languages.GetString("welcome.info", lang), theme.Color(theme.ColorNameForeground))
+	w.labelInfo.TextSize = 15
+	w.labelInfo.Alignment = fyne.TextAlignCenter
+	vBox := container.NewVBox(logo, spacer, w.labelWelcome, w.labelInfo)
+	center := container.NewCenter(vBox)
+	w.Container = container.NewBorder(nil, w.langBar.Container, nil, nil, center)
 
 	return &w
+}
+
+func (w *Welcome) UpdateLanguage(lang string) {
+	w.labelWelcome.Text = languages.GetString("welcome.welcome", lang)
+	w.labelInfo.Text = languages.GetString("welcome.info", lang)
+	w.setLang(lang)
 }
