@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -11,6 +12,7 @@ import (
 	ep9000 "github.com/ladecadence/EP9000"
 	"github.com/ladecadence/EcoBoxGUI/pkg/api"
 	"github.com/ladecadence/EcoBoxGUI/pkg/appstate"
+	"github.com/ladecadence/EcoBoxGUI/pkg/door"
 	"github.com/ladecadence/EcoBoxGUI/pkg/screens"
 )
 
@@ -25,6 +27,9 @@ func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 	case appstate.StateUserError:
 		mainContainer := screens.NewNoUser(a).Container
 		fyne.Do(func() { main.SetContent(mainContainer) })
+	case appstate.StateOpened:
+		mainContainer := screens.NewDoorOpen(a).Container
+		fyne.Do(func() { main.SetContent(mainContainer) })
 	}
 }
 
@@ -34,6 +39,12 @@ func main() {
 	// QR Scanner
 	qrData := make(chan []uint8)
 	scanner, err := ep9000.New("/dev/ttyACM0", 115200)
+	if err != nil {
+		panic(err)
+	}
+
+	// Door
+	door, err := door.NewDoor(17, 27)
 	if err != nil {
 		panic(err)
 	}
@@ -81,8 +92,19 @@ func main() {
 						appState.SetState(appstate.StateHello)
 					}
 				case appstate.StateHello:
+					// hello and open door
 					ChangeScreen(appState, mainWindow)
+					time.Sleep(3 * time.Second)
+					door.Open()
+					// wait until the door is open
+					for !door.IsOpen() {
+						time.Sleep(10 * time.Millisecond)
+					}
+					// ok, change state
+					appState.SetState(appstate.StateOpened)
 				case appstate.StateUserError:
+					ChangeScreen(appState, mainWindow)
+				case appstate.StateOpened:
 					ChangeScreen(appState, mainWindow)
 				}
 			}

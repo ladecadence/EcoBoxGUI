@@ -5,6 +5,7 @@ go 1.24.2
 require (
 	fyne.io/fyne/v2 v2.6.1
 	github.com/ladecadence/EP9000 v0.0.0-20250513075850-f2d535206ddd
+	periph.io/x/conn/v3 v3.7.2
 )
 
 require (
