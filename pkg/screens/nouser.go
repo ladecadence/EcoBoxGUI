@@ -17,26 +17,24 @@ type NoUser struct {
 	labelError *canvas.Text
 	labelMsg   *canvas.Text
 	okButton   *widget.Button
-	lang       string
 	langBar    *components.LangBar
-	setLang    func(string)
 	state      *appstate.AppState
 }
 
-func NewNoUser(lang string, setlang func(string), a *appstate.AppState) *NoUser {
-	h := NoUser{lang: lang, setLang: setlang, state: a}
+func NewNoUser(a *appstate.AppState) *NoUser {
+	h := NoUser{state: a}
 	h.langBar = components.NewLangBar(h.UpdateLanguage)
 	logo := canvas.NewImageFromFile("res/ecobox.svg")
 	logo.FillMode = canvas.ImageFillOriginal
 	spacer := layout.NewSpacer()
 	spacer.Resize(fyne.NewSize(1000, 100))
-	h.labelError = canvas.NewText(languages.GetString("nouser.error", lang), theme.Color(theme.ColorNameForeground))
+	h.labelError = canvas.NewText(languages.GetString("nouser.error", h.state.Lang()), theme.Color(theme.ColorNameForeground))
 	h.labelError.TextSize = 20
 	h.labelError.Alignment = fyne.TextAlignCenter
-	h.labelMsg = canvas.NewText(languages.GetString("nouser.msg", lang), theme.Color(theme.ColorNameForeground))
+	h.labelMsg = canvas.NewText(languages.GetString("nouser.msg", h.state.Lang()), theme.Color(theme.ColorNameForeground))
 	h.labelMsg.TextSize = 15
 	h.labelMsg.Alignment = fyne.TextAlignCenter
-	h.okButton = widget.NewButton(languages.GetString("nouser.button", lang), func() {
+	h.okButton = widget.NewButton(languages.GetString("nouser.button", h.state.Lang()), func() {
 		h.state.SetState(appstate.StateWelcome)
 	})
 	hBox := container.NewHBox(layout.NewSpacer(), h.okButton, layout.NewSpacer())
@@ -48,8 +46,8 @@ func NewNoUser(lang string, setlang func(string), a *appstate.AppState) *NoUser 
 }
 
 func (h *NoUser) UpdateLanguage(lang string) {
+	h.state.SetLang(lang)
 	h.labelError.Text = languages.GetString("nouser.error", lang)
 	h.labelMsg.Text = languages.GetString("nouser.msg", lang)
 	h.okButton.SetText(languages.GetString("nouser.button", lang))
-	h.setLang(lang)
 }

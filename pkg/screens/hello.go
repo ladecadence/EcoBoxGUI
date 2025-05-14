@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
+	"github.com/ladecadence/EcoBoxGUI/pkg/appstate"
 	"github.com/ladecadence/EcoBoxGUI/pkg/components"
 	"github.com/ladecadence/EcoBoxGUI/pkg/languages"
 )
@@ -14,23 +15,21 @@ type Hello struct {
 	Container  *fyne.Container
 	labelHello *canvas.Text
 	labelOpen  *canvas.Text
-	name       string
-	lang       string
+	state      *appstate.AppState
 	langBar    *components.LangBar
-	setLang    func(string)
 }
 
-func NewHello(lang string, name string, setlang func(string)) *Hello {
-	h := Hello{name: name, lang: lang, setLang: setlang}
+func NewHello(a *appstate.AppState) *Hello {
+	h := Hello{state: a}
 	h.langBar = components.NewLangBar(h.UpdateLanguage)
 	logo := canvas.NewImageFromFile("res/ecobox.svg")
 	logo.FillMode = canvas.ImageFillOriginal
 	spacer := layout.NewSpacer()
 	spacer.Resize(fyne.NewSize(1000, 100))
-	h.labelHello = canvas.NewText(languages.GetString("hello.hello", lang)+" "+h.name, theme.Color(theme.ColorNameForeground))
+	h.labelHello = canvas.NewText(languages.GetString("hello.hello", h.state.Lang())+" "+h.state.User().Name, theme.Color(theme.ColorNameForeground))
 	h.labelHello.TextSize = 20
 	h.labelHello.Alignment = fyne.TextAlignCenter
-	h.labelOpen = canvas.NewText(languages.GetString("hello.open", lang), theme.Color(theme.ColorNameForeground))
+	h.labelOpen = canvas.NewText(languages.GetString("hello.open", h.state.Lang()), theme.Color(theme.ColorNameForeground))
 	h.labelOpen.TextSize = 15
 	h.labelOpen.Alignment = fyne.TextAlignCenter
 	vBox := container.NewVBox(logo, spacer, h.labelHello, h.labelOpen)
@@ -41,7 +40,8 @@ func NewHello(lang string, name string, setlang func(string)) *Hello {
 }
 
 func (h *Hello) UpdateLanguage(lang string) {
-	h.labelHello.Text = languages.GetString("hello.hello", lang) + " " + h.name
+	h.state.SetLang(lang)
+	h.labelHello.Text = languages.GetString("hello.hello", lang) + " " + h.state.User().Name
 	h.labelOpen.Text = languages.GetString("hello.open", lang)
-	h.setLang(lang)
+
 }

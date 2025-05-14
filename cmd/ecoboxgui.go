@@ -17,13 +17,13 @@ import (
 func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 	switch a.State() {
 	case appstate.StateWelcome:
-		mainContainer := screens.NewWelcome(a.Lang(), a.SetLang).Container
+		mainContainer := screens.NewWelcome(a).Container
 		fyne.Do(func() { main.SetContent(mainContainer) })
 	case appstate.StateHello:
-		mainContainer := screens.NewHello(a.Lang(), a.User().Name, a.SetLang).Container
+		mainContainer := screens.NewHello(a).Container
 		fyne.Do(func() { main.SetContent(mainContainer) })
 	case appstate.StateUserError:
-		mainContainer := screens.NewNoUser(a.Lang(), a.SetLang, a).Container
+		mainContainer := screens.NewNoUser(a).Container
 		fyne.Do(func() { main.SetContent(mainContainer) })
 	}
 }
