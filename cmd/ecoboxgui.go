@@ -11,19 +11,19 @@ import (
 	ep9000 "github.com/ladecadence/EP9000"
 	"github.com/ladecadence/EcoBoxGUI/pkg/api"
 	"github.com/ladecadence/EcoBoxGUI/pkg/appstate"
-	"github.com/ladecadence/EcoBoxGUI/pkg/components"
+	"github.com/ladecadence/EcoBoxGUI/pkg/screens"
 )
 
 func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 	switch a.State() {
 	case appstate.StateWelcome:
-		mainContainer := components.NewWelcome(a.Lang(), a.SetLang).Container
+		mainContainer := screens.NewWelcome(a.Lang(), a.SetLang).Container
 		fyne.Do(func() { main.SetContent(mainContainer) })
 	case appstate.StateHello:
-		mainContainer := components.NewHello(a.Lang(), a.User().Name, a.SetLang).Container
+		mainContainer := screens.NewHello(a.Lang(), a.User().Name, a.SetLang).Container
 		fyne.Do(func() { main.SetContent(mainContainer) })
 	case appstate.StateUserError:
-		mainContainer := components.NewNoUser(a.Lang(), a.SetLang, a).Container
+		mainContainer := screens.NewNoUser(a.Lang(), a.SetLang, a).Container
 		fyne.Do(func() { main.SetContent(mainContainer) })
 	}
 }
@@ -64,7 +64,6 @@ func main() {
 	// check appState changes and hardware events
 	go func() {
 		for {
-			// AppState
 			if appState.StateChanged() {
 				fmt.Printf("New state: %d\n", appState.State())
 				appState.StateClean() // aknowledged
