@@ -14,12 +14,26 @@ import (
 	"github.com/ladecadence/EcoBoxGUI/pkg/components"
 )
 
+func ChangeScreen(a *appstate.AppState, main fyne.Window) {
+	switch a.State() {
+	case appstate.StateWelcome:
+		mainContainer := components.NewWelcome(a.Lang(), a.SetLang).Container
+		fyne.Do(func() { main.SetContent(mainContainer) })
+	case appstate.StateHello:
+		mainContainer := components.NewHello(a.Lang(), a.User().Name, a.SetLang).Container
+		fyne.Do(func() { main.SetContent(mainContainer) })
+	case appstate.StateUserError:
+		mainContainer := components.NewNoUser(a.Lang(), a.SetLang, a).Container
+		fyne.Do(func() { main.SetContent(mainContainer) })
+	}
+}
+
 func main() {
 	appState := appstate.New("es")
 
 	// QR Scanner
 	qrData := make(chan []uint8)
-	scanner, err := ep9000.New("/dev/ttyS1", 115200)
+	scanner, err := ep9000.New("/dev/ttyACM0", 115200)
 	if err != nil {
 		panic(err)
 	}
@@ -34,8 +48,8 @@ func main() {
 		mainWindow.Close()
 	})
 
-	mainContainer := components.NewWelcome(appState.Lang(), appState.SetLang).Container
-	mainWindow.SetContent(mainContainer)
+	// init state
+	appState.SetState(appstate.StateWelcome)
 
 	// listen to scanner thread
 	go func() {
@@ -47,40 +61,33 @@ func main() {
 		}
 	}()
 
-	// check appState and hardware events
+	// check appState changes and hardware events
 	go func() {
 		for {
 			// AppState
 			if appState.StateChanged() {
 				fmt.Printf("New state: %d\n", appState.State())
+				appState.StateClean() // aknowledged
 				switch appState.State() {
 				case appstate.StateWelcome:
-					appState.StateClean() // aknowledged
-					mainContainer := components.NewWelcome(appState.Lang(), appState.SetLang).Container
-					fyne.Do(func() { mainWindow.SetContent(mainContainer) })
+					// start, welcome screen and listen for QR code
+					ChangeScreen(appState, mainWindow)
+					recv := <-qrData
+					fmt.Printf("QR Data: %s\n", recv)
+					user, err := api.GetUser(strings.TrimSpace(string(recv)))
+					if err != nil {
+						appState.SetState(appstate.StateUserError)
+					} else {
+						appState.SetUser(&user)
+						appState.SetState(appstate.StateHello)
+					}
+				case appstate.StateHello:
+					ChangeScreen(appState, mainWindow)
+				case appstate.StateUserError:
+					ChangeScreen(appState, mainWindow)
 				}
 			}
 
-			// QR Scanner data
-			// select {
-			// case recv := <-qrData:
-			for recv := range qrData {
-				fmt.Printf("QR Data: %s\n", recv)
-				if appState.State() == appstate.StateWelcome {
-					user, err := api.GetUser(strings.TrimSpace(string(recv)))
-					if err != nil {
-						mainContainer := components.NewNoUser(appState.Lang(), appState.SetLang, appState).Container
-						fyne.Do(func() { mainWindow.SetContent(mainContainer) })
-					} else {
-						mainContainer := components.NewHello(appState.Lang(), user.Name, appState.SetLang).Container
-						fyne.Do(func() { mainWindow.SetContent(mainContainer) })
-					}
-				}
-			}
-			// default:
-			// 	// to free the cpu
-			// 	time.Sleep(time.Millisecond * 10)
-			// }
 		}
 	}()
 
