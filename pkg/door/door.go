@@ -43,7 +43,7 @@ func NewDoor(pinOpen, pinClosed int) (*Door, error) {
 }
 
 func (d *Door) IsOpen() bool {
-	return bool(d.closedPin.Read())
+	return !bool(d.closedPin.Read())
 }
 
 func (d *Door) Open() {
