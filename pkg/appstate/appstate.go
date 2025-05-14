@@ -1,10 +1,15 @@
 package appstate
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/ladecadence/EcoBoxGUI/pkg/api"
+)
 
 const (
 	StateWelcome = iota
 	StateHello
+	StateUserError
 	StateOpened
 	StateClosed
 	StateFinish
@@ -14,11 +19,12 @@ const (
 type AppState struct {
 	lang         string
 	state        int
+	user         *api.User
 	stateChanged bool
 }
 
 func New(lang string) *AppState {
-	a := AppState{lang: lang, state: StateWelcome, stateChanged: false}
+	a := AppState{lang: lang, state: StateWelcome, stateChanged: false, user: nil}
 	return &a
 }
 
@@ -46,4 +52,16 @@ func (a *AppState) StateChanged() bool {
 
 func (a *AppState) StateClean() {
 	a.stateChanged = false
+}
+
+func (a *AppState) SetUser(u *api.User) {
+	a.user = u
+}
+
+func (a *AppState) User() *api.User {
+	return a.user
+}
+
+func (a *AppState) ClearUser() {
+	a.user = nil
 }
