@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"periph.io/x/conn/v3/driver/driverreg"
 	"periph.io/x/conn/v3/gpio"
 	"periph.io/x/conn/v3/gpio/gpioreg"
+	"periph.io/x/host/v3"
 )
 
 type Door struct {
@@ -17,14 +17,15 @@ type Door struct {
 
 func NewDoor(pinOpen, pinClosed int) (*Door, error) {
 	door := Door{}
-	if _, err := driverreg.Init(); err != nil {
+	_, err := host.Init()
+	if err != nil {
 		return nil, err
 	}
 	door.openPin = gpioreg.ByName(fmt.Sprintf("%d", pinOpen))
 	if door.openPin == nil {
 		return nil, errors.New("Can't use open pin")
 	}
-	err := door.openPin.Out(gpio.Low)
+	err = door.openPin.Out(gpio.Low)
 	if err != nil {
 		return nil, err
 	}
