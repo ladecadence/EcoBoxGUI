@@ -8,6 +8,8 @@ var eus = map[string]string{
 	"nouser.error":    "Ezin dugu aurkitu sartutako erabiltzailea",
 	"nouser.msg":      "Mesedez, saiatu berriro",
 	"nouser.button":   "Ados",
+	"open.open":       "Atea ireki",
+	"open.msg":        "Ziurtatu atea itxita dagoela jarraitzeko",
 }
 
 var es = map[string]string{
@@ -18,6 +20,8 @@ var es = map[string]string{
 	"nouser.error":    "No podemos encontrar el usuario introducido",
 	"nouser.msg":      "Por favor inténtalo de nuevo",
 	"nouser.button":   "De acuerdo",
+	"open.open":       "Puerta abierta",
+	"open.msg":        "Asegúrate de que la puerta quede cerrada para continuar",
 }
 
 var en = map[string]string{
@@ -28,6 +32,8 @@ var en = map[string]string{
 	"nouser.error":    "We can't find the user provided",
 	"nouser.msg":      "Please try again",
 	"nouser.button":   "Ok",
+	"open.open":       "Door open",
+	"open.msg":        "Be sure to close the door to continue",
 }
 
 func GetString(id string, lang string) string {
