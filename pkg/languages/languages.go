@@ -10,6 +10,8 @@ var eus = map[string]string{
 	"nouser.button":   "Ados",
 	"open.open":       "Atea ireki",
 	"open.msg":        "Ziurtatu atea itxita dagoela jarraitzeko",
+	"closed.closed":   "Atea",
+	"closed.msg":      "Itxaron pixka bat aldaketak egiaztatzen ditugun bitartean, mesedez.",
 }
 
 var es = map[string]string{
@@ -22,6 +24,8 @@ var es = map[string]string{
 	"nouser.button":   "De acuerdo",
 	"open.open":       "Puerta abierta",
 	"open.msg":        "Asegúrate de que la puerta quede cerrada para continuar",
+	"closed.closed":   "Puerta cerrada",
+	"closed.msg":      "Espera un momento mientras verificamos los cambios, por favor.",
 }
 
 var en = map[string]string{
@@ -34,6 +38,8 @@ var en = map[string]string{
 	"nouser.button":   "Ok",
 	"open.open":       "Door open",
 	"open.msg":        "Be sure to close the door to continue",
+	"closed.closed":   "Door closed",
+	"closed.msg":      "Please wait a moment while we check the changes.",
 }
 
 func GetString(id string, lang string) string {
