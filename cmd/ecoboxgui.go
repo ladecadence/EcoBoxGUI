@@ -106,6 +106,12 @@ func main() {
 					ChangeScreen(appState, mainWindow)
 				case appstate.StateOpened:
 					ChangeScreen(appState, mainWindow)
+					// ok wait for door to close
+					for door.IsOpen() {
+						time.Sleep(10 * time.Millisecond)
+					}
+					// ok, now we need to make the inventory
+					appState.SetState(appstate.StateClosed)
 				}
 			}
 
