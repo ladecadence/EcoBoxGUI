@@ -131,7 +131,7 @@ func main() {
 						// RFID ERROR SCREEN?
 					}
 					for _, t := range tags {
-						fmt.Printf("Tag: %s", hex.EncodeToString(t.EPC))
+						fmt.Printf("Tag: %s\n", hex.EncodeToString(t.EPC))
 					}
 				}
 			}
