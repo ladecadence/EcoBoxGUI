@@ -8,9 +8,9 @@ var eus = map[string]string{
 	"nouser.error":    "Ezin dugu aurkitu sartutako erabiltzailea",
 	"nouser.msg":      "Mesedez, saiatu berriro",
 	"nouser.button":   "Ados",
-	"open.open":       "Atea ireki",
+	"open.open":       "Atea irekia",
 	"open.msg":        "Ziurtatu atea itxita dagoela jarraitzeko",
-	"closed.closed":   "Atea",
+	"closed.closed":   "Atea itxita",
 	"closed.msg":      "Itxaron pixka bat aldaketak egiaztatzen ditugun bitartean, mesedez.",
 }
 
