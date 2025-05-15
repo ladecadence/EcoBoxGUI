@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"strings"
 	"time"
@@ -14,6 +15,7 @@ import (
 	"github.com/ladecadence/EcoBoxGUI/pkg/appstate"
 	"github.com/ladecadence/EcoBoxGUI/pkg/door"
 	"github.com/ladecadence/EcoBoxGUI/pkg/screens"
+	r200 "github.com/ladecadence/GoR200"
 )
 
 func ChangeScreen(a *appstate.AppState, main fyne.Window) {
@@ -42,6 +44,12 @@ func main() {
 	// QR Scanner
 	qrData := make(chan []uint8)
 	scanner, err := ep9000.New("/dev/ttyACM0", 115200)
+	if err != nil {
+		panic(err)
+	}
+
+	// RFID reader
+	rfid, err := r200.New("/dev/ttyUSB0", 115200, false)
 	if err != nil {
 		panic(err)
 	}
@@ -117,6 +125,14 @@ func main() {
 					appState.SetState(appstate.StateClosed)
 				case appstate.StateClosed:
 					ChangeScreen(appState, mainWindow)
+					// read tags
+					tags, err := rfid.ReadTags()
+					if err != nil {
+						// RFID ERROR SCREEN?
+					}
+					for _, t := range tags {
+						fmt.Printf("Tag: %s", hex.EncodeToString(t.EPC))
+					}
 				}
 			}
 
