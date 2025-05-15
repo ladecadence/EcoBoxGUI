@@ -26,7 +26,7 @@ func NewDoorOpen(a *appstate.AppState) *DoorOpen {
 	logo.FillMode = canvas.ImageFillOriginal
 	spacer := layout.NewSpacer()
 	spacer.Resize(fyne.NewSize(1000, 100))
-	h.labelOpen = canvas.NewText(languages.GetString("open.open", a.Lang())+" "+h.state.User().Name, theme.Color(theme.ColorNameForeground))
+	h.labelOpen = canvas.NewText(languages.GetString("open.open", a.Lang()), theme.Color(theme.ColorNameForeground))
 	h.labelOpen.TextSize = 20
 	h.labelOpen.Alignment = fyne.TextAlignCenter
 	h.labelMsg = canvas.NewText(languages.GetString("open.msg", a.Lang()), theme.Color(theme.ColorNameForeground))
@@ -41,6 +41,6 @@ func NewDoorOpen(a *appstate.AppState) *DoorOpen {
 
 func (h *DoorOpen) UpdateLanguage(lang string) {
 	h.state.SetLang(lang)
-	h.labelOpen.Text = languages.GetString("open.open", h.state.Lang()) + " " + h.state.User().Name
+	h.labelOpen.Text = languages.GetString("open.open", h.state.Lang())
 	h.labelMsg.Text = languages.GetString("open.msg", lang)
 }
