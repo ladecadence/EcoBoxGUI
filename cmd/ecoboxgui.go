@@ -30,6 +30,9 @@ func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 	case appstate.StateOpened:
 		mainContainer := screens.NewDoorOpen(a).Container
 		fyne.Do(func() { main.SetContent(mainContainer) })
+	case appstate.StateClosed:
+		mainContainer := screens.NewDoorClosed(a).Container
+		fyne.Do(func() { main.SetContent(mainContainer) })
 	}
 }
 
@@ -112,6 +115,8 @@ func main() {
 					}
 					// ok, now we need to make the inventory
 					appState.SetState(appstate.StateClosed)
+				case appstate.StateClosed:
+					ChangeScreen(appState, mainWindow)
 				}
 			}
 
