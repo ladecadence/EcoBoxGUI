@@ -34,7 +34,7 @@ func NewDoor(pinOpen, pinClosed int) (*Door, error) {
 	if door.closedPin == nil {
 		return nil, errors.New("Can't use closed pin")
 	}
-	err = door.closedPin.In(gpio.PullUp, gpio.FallingEdge)
+	err = door.closedPin.In(gpio.PullUp, gpio.BothEdges)
 	if err != nil {
 		return nil, err
 	}
