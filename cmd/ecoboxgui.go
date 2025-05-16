@@ -37,6 +37,9 @@ func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 	case appstate.StateClosed:
 		mainContainer := screens.NewDoorClosed(a).Container
 		fyne.Do(func() { main.SetContent(mainContainer) })
+	case appstate.StateChecked:
+		mainContainer := screens.NewConfirmTuppers(a).Container
+		fyne.Do(func() { main.SetContent(mainContainer) })
 	}
 }
 
@@ -165,6 +168,12 @@ func main() {
 						}
 					}
 					fmt.Println(dbTuppers)
+					// add to state
+					for _, t := range dbTuppers {
+						appState.AddTupper(t.Number)
+					}
+					// change state
+					appState.SetState(appstate.StateChecked)
 				}
 			}
 

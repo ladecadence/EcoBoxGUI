@@ -2,6 +2,8 @@ package appstate
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/ladecadence/EcoBoxGUI/pkg/models"
 )
@@ -12,6 +14,7 @@ const (
 	StateUserError
 	StateOpened
 	StateClosed
+	StateChecked
 	StateFinish
 	StateError
 )
@@ -21,10 +24,12 @@ type AppState struct {
 	state        int
 	user         *models.User
 	stateChanged bool
+	tuppersTaken []int
 }
 
 func New(lang string) *AppState {
 	a := AppState{lang: lang, state: StateWelcome, stateChanged: false, user: nil}
+	a.tuppersTaken = []int{}
 	return &a
 }
 
@@ -64,4 +69,27 @@ func (a *AppState) User() *models.User {
 
 func (a *AppState) ClearUser() {
 	a.user = nil
+}
+
+func (a *AppState) AddTupper(number int) {
+	a.tuppersTaken = append(a.tuppersTaken, number)
+}
+
+func (a *AppState) DeleteTuppers(number int) {
+	a.tuppersTaken = []int{}
+}
+
+func (a *AppState) NumTuppers() int {
+	return len(a.tuppersTaken)
+}
+
+func (a *AppState) TupperListString() string {
+	list := ""
+	for _, t := range a.tuppersTaken {
+		list = list + strconv.Itoa(t) + ","
+	}
+	// remove last ","
+	list = strings.TrimSuffix(list, ",")
+
+	return list
 }
