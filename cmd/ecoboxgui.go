@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/ladecadence/EcoBoxGUI/pkg/api"
 	"github.com/ladecadence/EcoBoxGUI/pkg/appstate"
 	"github.com/ladecadence/EcoBoxGUI/pkg/door"
+	"github.com/ladecadence/EcoBoxGUI/pkg/inventory"
 	"github.com/ladecadence/EcoBoxGUI/pkg/screens"
 	r200 "github.com/ladecadence/GoR200"
 )
@@ -41,6 +43,12 @@ func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 func main() {
 	appState := appstate.New("es")
 
+	// database
+	invent, err := inventory.New("ecobox.db")
+	if err != nil {
+		panic(err)
+	}
+
 	// QR Scanner
 	qrData := make(chan []uint8)
 	scanner, err := ep9000.New("/dev/ttyACM0", 115200)
@@ -52,6 +60,16 @@ func main() {
 	rfid, err := r200.New("/dev/ttyUSB0", 115200, false)
 	if err != nil {
 		panic(err)
+	}
+	// get all tags and store them in database (upsert)
+	responses, err := rfid.ReadTags()
+	for _, r := range responses {
+		tupper, err := api.GetTupper(hex.EncodeToString(r.EPC))
+		if err != nil {
+			// TODO
+			continue
+		}
+		invent.InsertTupper(tupper)
 	}
 
 	// Door
@@ -130,9 +148,22 @@ func main() {
 					if err != nil {
 						// RFID ERROR SCREEN?
 					}
-					for _, t := range tags {
-						fmt.Printf("Tag: %s\n", hex.EncodeToString(t.EPC))
+					// check database
+					dbTuppers, err := invent.GetTuppers()
+					if err != nil {
+						// DB ERROR?
 					}
+					// remove the present tuppers so only removed tuppers remain
+					for _, t := range tags {
+						tag := hex.EncodeToString(t.EPC)
+						fmt.Println("Tag:", tag)
+						for i, tupper := range dbTuppers {
+							if tupper.ID == tag {
+								dbTuppers = slices.Delete(dbTuppers, i, i+1)
+							}
+						}
+					}
+					fmt.Println(dbTuppers)
 				}
 			}
 

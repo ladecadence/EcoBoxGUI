@@ -5,7 +5,7 @@ go 1.24.2
 require (
 	fyne.io/fyne/v2 v2.6.1
 	github.com/ladecadence/EP9000 v0.0.0-20250513075850-f2d535206ddd
-	github.com/ladecadence/GoR200 v0.0.0-20250515092452-7bf9102994f6
+	github.com/ladecadence/GoR200 v0.0.0-20250515112533-a6de8efb807b
 	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.26.1
 	periph.io/x/conn/v3 v3.7.2
