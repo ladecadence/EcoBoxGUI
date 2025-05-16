@@ -70,6 +70,7 @@ func main() {
 			continue
 		}
 		invent.InsertTupper(tupper)
+		fmt.Printf("Start tupper: %s\n", tupper.ID)
 	}
 
 	// Door
