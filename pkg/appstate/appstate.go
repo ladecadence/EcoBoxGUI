@@ -3,7 +3,7 @@ package appstate
 import (
 	"fmt"
 
-	"github.com/ladecadence/EcoBoxGUI/pkg/api"
+	"github.com/ladecadence/EcoBoxGUI/pkg/models"
 )
 
 const (
@@ -19,7 +19,7 @@ const (
 type AppState struct {
 	lang         string
 	state        int
-	user         *api.User
+	user         *models.User
 	stateChanged bool
 }
 
@@ -54,11 +54,11 @@ func (a *AppState) StateClean() {
 	a.stateChanged = false
 }
 
-func (a *AppState) SetUser(u *api.User) {
+func (a *AppState) SetUser(u *models.User) {
 	a.user = u
 }
 
-func (a *AppState) User() *api.User {
+func (a *AppState) User() *models.User {
 	return a.user
 }
 
