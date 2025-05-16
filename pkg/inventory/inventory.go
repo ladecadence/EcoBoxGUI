@@ -12,20 +12,22 @@ type Inventory struct {
 	db           *gorm.DB
 }
 
-func (i *Inventory) Connect() error {
+func New(file string) (*Inventory, error) {
+	i := Inventory{databaseFile: file}
+
 	database, err := gorm.Open(sqlite.Open(i.databaseFile), &gorm.Config{})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	i.db = database
 
 	err = i.db.AutoMigrate(&models.Tupper{})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &i, nil
 }
 
 func (i *Inventory) GetTuppers() ([]models.Tupper, error) {
@@ -44,4 +46,10 @@ func (i *Inventory) InsertTupper(t models.Tupper) error {
 func (i *Inventory) DeleteTupper(t models.Tupper) error {
 	result := i.db.Delete(&t)
 	return result.Error
+}
+
+func (i *Inventory) GetTupper(id string) (models.Tupper, error) {
+	var tupper models.Tupper
+	result := i.db.Where("id=?", id).First(&tupper)
+	return tupper, result.Error
 }
