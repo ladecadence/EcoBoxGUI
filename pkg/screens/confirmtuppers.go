@@ -35,9 +35,9 @@ func NewConfirmTuppers(a *appstate.AppState) *ConfirmTuppers {
 	case 0:
 		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.none", c.state.Lang()), theme.Color(theme.ColorNameForeground))
 	case 1:
-		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.sing"+a.TupperListString(), c.state.Lang()), theme.Color(theme.ColorNameForeground))
+		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.sing", c.state.Lang())+a.TupperListString(), theme.Color(theme.ColorNameForeground))
 	default:
-		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.plur"+a.TupperListString(), c.state.Lang()), theme.Color(theme.ColorNameForeground))
+		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.plur", c.state.Lang())+a.TupperListString(), theme.Color(theme.ColorNameForeground))
 	}
 
 	c.labelMsg.TextSize = 15
@@ -60,9 +60,9 @@ func (c *ConfirmTuppers) UpdateLanguage(lang string) {
 	case 0:
 		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.none", c.state.Lang()), theme.Color(theme.ColorNameForeground))
 	case 1:
-		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.sing"+c.state.TupperListString(), c.state.Lang()), theme.Color(theme.ColorNameForeground))
+		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.sing", c.state.Lang())+c.state.TupperListString(), theme.Color(theme.ColorNameForeground))
 	default:
-		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.plur"+c.state.TupperListString(), c.state.Lang()), theme.Color(theme.ColorNameForeground))
+		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.plur", c.state.Lang())+c.state.TupperListString(), theme.Color(theme.ColorNameForeground))
 	}
 	c.okButton.SetText(languages.GetString("confirm.button", lang))
 }
