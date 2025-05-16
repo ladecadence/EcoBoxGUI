@@ -114,6 +114,8 @@ func main() {
 				switch appState.State() {
 				case appstate.StateWelcome:
 					// start, welcome screen and listen for QR code
+					appState.ClearUser()
+					appState.DeleteTuppers()
 					ChangeScreen(appState, mainWindow)
 					recv := <-qrData
 					fmt.Printf("QR Data: %s\n", recv)

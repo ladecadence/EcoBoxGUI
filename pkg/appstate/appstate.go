@@ -75,7 +75,7 @@ func (a *AppState) AddTupper(number int) {
 	a.tuppersTaken = append(a.tuppersTaken, number)
 }
 
-func (a *AppState) DeleteTuppers(number int) {
+func (a *AppState) DeleteTuppers() {
 	a.tuppersTaken = []int{}
 }
 
