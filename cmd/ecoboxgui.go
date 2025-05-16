@@ -174,6 +174,8 @@ func main() {
 					}
 					// change state
 					appState.SetState(appstate.StateChecked)
+				case appstate.StateChecked:
+					ChangeScreen(appState, mainWindow)
 				}
 			}
 
