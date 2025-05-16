@@ -13,12 +13,12 @@ import (
 )
 
 type ConfirmTuppers struct {
-	Container  *fyne.Container
-	labelError *canvas.Text
-	labelMsg   *canvas.Text
-	okButton   *widget.Button
-	langBar    *components.LangBar
-	state      *appstate.AppState
+	Container    *fyne.Container
+	labelConfirm *canvas.Text
+	labelMsg     *canvas.Text
+	okButton     *widget.Button
+	langBar      *components.LangBar
+	state        *appstate.AppState
 }
 
 func NewConfirmTuppers(a *appstate.AppState) *ConfirmTuppers {
@@ -28,9 +28,9 @@ func NewConfirmTuppers(a *appstate.AppState) *ConfirmTuppers {
 	logo.FillMode = canvas.ImageFillOriginal
 	spacer := layout.NewSpacer()
 	spacer.Resize(fyne.NewSize(1000, 100))
-	c.labelError = canvas.NewText(languages.GetString("confirm.confirm", c.state.Lang()), theme.Color(theme.ColorNameForeground))
-	c.labelError.TextSize = 20
-	c.labelError.Alignment = fyne.TextAlignCenter
+	c.labelConfirm = canvas.NewText(languages.GetString("confirm.confirm", c.state.Lang()), theme.Color(theme.ColorNameForeground))
+	c.labelConfirm.TextSize = 20
+	c.labelConfirm.Alignment = fyne.TextAlignCenter
 	switch a.NumTuppers() {
 	case 0:
 		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.none", c.state.Lang()), theme.Color(theme.ColorNameForeground))
@@ -46,7 +46,7 @@ func NewConfirmTuppers(a *appstate.AppState) *ConfirmTuppers {
 		c.state.SetState(appstate.StateWelcome)
 	})
 	hBox := container.NewHBox(layout.NewSpacer(), c.okButton, layout.NewSpacer())
-	vBox := container.NewVBox(logo, spacer, c.labelError, c.labelMsg, hBox)
+	vBox := container.NewVBox(logo, spacer, c.labelConfirm, c.labelMsg, hBox)
 	center := container.NewCenter(vBox)
 	c.Container = container.NewBorder(nil, c.langBar.Container, nil, nil, center)
 
@@ -55,7 +55,7 @@ func NewConfirmTuppers(a *appstate.AppState) *ConfirmTuppers {
 
 func (c *ConfirmTuppers) UpdateLanguage(lang string) {
 	c.state.SetLang(lang)
-	c.labelError.Text = languages.GetString("confirm.error", lang)
+	c.labelConfirm.Text = languages.GetString("confirm.confirm", lang)
 	switch c.state.NumTuppers() {
 	case 0:
 		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.none", c.state.Lang()), theme.Color(theme.ColorNameForeground))
