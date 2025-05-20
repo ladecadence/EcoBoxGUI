@@ -48,6 +48,11 @@ func (i *Inventory) DeleteTupper(t models.Tupper) error {
 	return result.Error
 }
 
+func (i *Inventory) DeleteTupperByNum(number int) error {
+	result := i.db.Where("number = ?", number).Delete(&models.Tupper{})
+	return result.Error
+}
+
 func (i *Inventory) GetTupper(id string) (models.Tupper, error) {
 	var tupper models.Tupper
 	result := i.db.Where("id=?", id).First(&tupper)

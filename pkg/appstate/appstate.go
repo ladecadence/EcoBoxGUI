@@ -71,6 +71,10 @@ func (a *AppState) ClearUser() {
 	a.user = nil
 }
 
+func (a *AppState) TuppersTaken() []int {
+	return a.tuppersTaken
+}
+
 func (a *AppState) AddTupper(number int) {
 	a.tuppersTaken = append(a.tuppersTaken, number)
 }

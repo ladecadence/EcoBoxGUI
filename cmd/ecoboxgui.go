@@ -178,6 +178,10 @@ func main() {
 					// change state
 					appState.SetState(appstate.StateChecked)
 				case appstate.StateChecked:
+					// ok, remove tuppers from inventory
+					for _, t := range appState.TuppersTaken() {
+						invent.DeleteTupperByNum(t)
+					}
 					ChangeScreen(appState, mainWindow)
 				}
 			}
