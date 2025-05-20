@@ -12,11 +12,11 @@ var testUsers = []models.User{
 }
 
 var testTuppers = []models.Tupper{
-	{ID: "300833B2DDD9014000000001", Number: 1},
-	{ID: "300833B2DDD9014000000002", Number: 2},
-	{ID: "300833B2DDD9014000000003", Number: 3},
-	{ID: "300833B2DDD9014000000004", Number: 4},
-	{ID: "300833B2DDD9014000000005", Number: 5},
+	{ID: "300833b2ddd9014000000001", Number: 1},
+	{ID: "300833b2ddd9014000000002", Number: 2},
+	{ID: "300833b2ddd9014000000003", Number: 3},
+	{ID: "300833b2ddd9014000000004", Number: 4},
+	{ID: "300833b2ddd9014000000005", Number: 5},
 }
 
 func GetUser(id string) (models.User, error) {
