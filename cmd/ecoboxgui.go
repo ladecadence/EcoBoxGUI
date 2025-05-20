@@ -67,6 +67,7 @@ func main() {
 	// get all tags and store them in database (upsert)
 	responses, err := rfid.ReadTags()
 	for _, r := range responses {
+		fmt.Println("Tag: ", hex.EncodeToString(r.EPC))
 		tupper, err := api.GetTupper(hex.EncodeToString(r.EPC))
 		if err != nil {
 			// TODO
