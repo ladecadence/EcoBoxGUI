@@ -1,8 +1,8 @@
 package models
 
 type User struct {
-	ID      string
-	Name    string
-	Surname string
-	Tuppers []Tupper
+	Result int    `json:"resultado"`
+	Code   int    `json:"codigo"`
+	ID     int    `json:"id"`
+	Name   string `json:"nombre"`
 }
