@@ -35,6 +35,10 @@ func New(lang string, token *api.Token) *AppState {
 	return &a
 }
 
+func (a *AppState) Token() *api.Token {
+	return a.token
+}
+
 func (a *AppState) SetLang(lang string) {
 	a.lang = lang
 }
