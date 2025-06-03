@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ladecadence/EcoBoxGUI/pkg/api"
 	"github.com/ladecadence/EcoBoxGUI/pkg/models"
 )
 
@@ -23,6 +24,7 @@ type AppState struct {
 	lang         string
 	state        int
 	user         *models.User
+	token        *api.Token
 	stateChanged bool
 	tuppersTaken []int
 }
