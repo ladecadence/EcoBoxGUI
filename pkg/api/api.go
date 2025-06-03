@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -113,6 +114,7 @@ func GetUser(token *Token, id string, cabinet string) (models.User, error) {
 	// parse response
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
+	fmt.Println(body)
 	if err != nil {
 		return models.User{}, errors.New("Can't parse user response body")
 	}
