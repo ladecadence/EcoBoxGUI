@@ -42,7 +42,7 @@ type Token struct {
 	AccessToken string `json:"access_token"`
 }
 
-type UserRequest struct {
+type ApiRequest struct {
 	User    string `json:"usuario"`
 	Cabinet string `json:"armario"`
 }
@@ -91,7 +91,7 @@ func GetUser(token *Token, id string, cabinet string) (models.User, error) {
 	u.Path = userPath
 
 	// body
-	userRequest := UserRequest{User: id, Cabinet: cabinet}
+	userRequest := ApiRequest{User: id, Cabinet: cabinet}
 	jsonBody, err := json.Marshal(userRequest)
 	if err != nil {
 		return models.User{}, errors.New("Problem encoding user request")
@@ -130,6 +130,97 @@ func GetUser(token *Token, id string, cabinet string) (models.User, error) {
 		return user, nil
 	} else {
 		return models.User{}, errors.New("no such user")
+	}
+}
+
+func Open(token *Token, id string, cabinet string) (models.Response, error) {
+	// url
+	u, _ := url.ParseRequestURI(apiURL)
+	u.Path = openPath
+
+	// body
+	userRequest := ApiRequest{User: id, Cabinet: cabinet}
+	jsonBody, err := json.Marshal(userRequest)
+	if err != nil {
+		return models.Response{}, errors.New("Problem encoding open request")
+	}
+	// make request
+	client := &http.Client{}
+	r, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return models.Response{}, errors.New("Can't create open request")
+	}
+	r.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	r.Header.Add("Authorization", "Bearer "+token.AccessToken)
+
+	resp, err := client.Do(r)
+	if err != nil {
+		return models.Response{}, errors.New("Can't execute open request")
+	}
+
+	// parse response
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return models.Response{}, errors.New("Can't parse open response body")
+	}
+
+	var user models.Response
+	if err := json.Unmarshal(body, &user); err != nil {
+		return models.Response{}, errors.New("Can't parse open response json")
+	}
+
+	// check response
+	if user.Result == 1 {
+		return user, nil
+	} else {
+		return models.Response{}, errors.New("Problem with open request")
+	}
+
+}
+
+func Close(token *Token, id string, cabinet string) (models.Response, error) {
+	// url
+	u, _ := url.ParseRequestURI(apiURL)
+	u.Path = closePath
+
+	// body
+	userRequest := ApiRequest{User: id, Cabinet: cabinet}
+	jsonBody, err := json.Marshal(userRequest)
+	if err != nil {
+		return models.Response{}, errors.New("Problem encoding close request")
+	}
+	// make request
+	client := &http.Client{}
+	r, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return models.Response{}, errors.New("Can't create close request")
+	}
+	r.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	r.Header.Add("Authorization", "Bearer "+token.AccessToken)
+
+	resp, err := client.Do(r)
+	if err != nil {
+		return models.Response{}, errors.New("Can't execute close request")
+	}
+
+	// parse response
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return models.Response{}, errors.New("Can't parse close response body")
+	}
+
+	var user models.Response
+	if err := json.Unmarshal(body, &user); err != nil {
+		return models.Response{}, errors.New("Can't parse close response json")
+	}
+
+	// check response
+	if user.Result == 1 {
+		return user, nil
+	} else {
+		return models.Response{}, errors.New("Problem with open request")
 	}
 }
 
