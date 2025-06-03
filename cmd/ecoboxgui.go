@@ -54,6 +54,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(token)
 
 	// appState
 	appState := appstate.New("es", token)
