@@ -60,13 +60,13 @@ func main() {
 
 	// QR Scanner
 	qrData := make(chan []uint8)
-	scanner, err := ep9000.New(config.RFIDPort, 115200)
+	scanner, err := ep9000.New(config.QRPort, 115200)
 	if err != nil {
 		panic(err)
 	}
 
 	// RFID reader
-	rfid, err := r200.New(config.QRPort, 115200, false)
+	rfid, err := r200.New(config.RFIDPort, 115200, false)
 	if err != nil {
 		panic(err)
 	}
