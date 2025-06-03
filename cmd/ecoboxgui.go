@@ -49,8 +49,14 @@ func main() {
 	config := config.Config{ConfFile: "config.toml"}
 	config.GetConfig()
 
+	// get auth token
+	token, err := api.GetToken()
+	if err != nil {
+		panic(err)
+	}
+
 	// appState
-	appState := appstate.New("es")
+	appState := appstate.New("es", token)
 
 	// database
 	invent, err := inventory.New(config.Database)

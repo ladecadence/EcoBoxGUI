@@ -29,8 +29,8 @@ type AppState struct {
 	tuppersTaken []int
 }
 
-func New(lang string) *AppState {
-	a := AppState{lang: lang, state: StateWelcome, stateChanged: false, user: nil}
+func New(lang string, token *api.Token) *AppState {
+	a := AppState{lang: lang, token: token, state: StateWelcome, stateChanged: false, user: nil}
 	a.tuppersTaken = []int{}
 	return &a
 }
