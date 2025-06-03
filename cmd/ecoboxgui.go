@@ -14,6 +14,7 @@ import (
 	ep9000 "github.com/ladecadence/EP9000"
 	"github.com/ladecadence/EcoBoxGUI/pkg/api"
 	"github.com/ladecadence/EcoBoxGUI/pkg/appstate"
+	"github.com/ladecadence/EcoBoxGUI/pkg/config"
 	"github.com/ladecadence/EcoBoxGUI/pkg/door"
 	"github.com/ladecadence/EcoBoxGUI/pkg/inventory"
 	"github.com/ladecadence/EcoBoxGUI/pkg/screens"
@@ -44,23 +45,28 @@ func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 }
 
 func main() {
+	// read configuration
+	config := config.Config{ConfFile: "config.toml"}
+	config.GetConfig()
+
+	// appState
 	appState := appstate.New("es")
 
 	// database
-	invent, err := inventory.New("ecobox.db")
+	invent, err := inventory.New(config.Database)
 	if err != nil {
 		panic(err)
 	}
 
 	// QR Scanner
 	qrData := make(chan []uint8)
-	scanner, err := ep9000.New("/dev/ttyACM0", 115200)
+	scanner, err := ep9000.New(config.RFIDPort, 115200)
 	if err != nil {
 		panic(err)
 	}
 
 	// RFID reader
-	rfid, err := r200.New("/dev/ttyUSB0", 115200, false)
+	rfid, err := r200.New(config.QRPort, 115200, false)
 	if err != nil {
 		panic(err)
 	}
