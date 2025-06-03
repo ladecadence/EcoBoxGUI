@@ -124,7 +124,7 @@ func GetUser(token *Token, id string, cabinet string) (models.User, error) {
 	}
 
 	// check response
-	if user.Code == 1 {
+	if user.Result == 1 {
 		return user, nil
 	} else {
 		return models.User{}, errors.New("no such user")
