@@ -1,0 +1,4 @@
+id = "E00001"
+database = "ecobox.db"
+qr_port = "/dev/ttyACM0"
+rfid_port = "/dev/ttyUSB0"
