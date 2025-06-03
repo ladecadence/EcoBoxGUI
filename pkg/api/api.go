@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
@@ -22,8 +23,8 @@ const (
 )
 
 var testUsers = []models.User{
-	{ID: "d343b80c-ae82-41f5-ad77-7a32d1be85e2", Name: "Perico", Surname: "De los palotes", Tuppers: []models.Tupper{{ID: "tuper1", Number: 5}}},
-	{ID: "898ceaf8-2b51-4a4b-8055-d04384620dc9", Name: "Manolo", Surname: "El del bombo"},
+	{ID: 0, Name: "Perico"},
+	{ID: 1, Name: "Manolo"},
 }
 
 var testTuppers = []models.Tupper{
@@ -38,6 +39,11 @@ type Token struct {
 	Type        string `json:"token_type"`
 	Expires     int    `json:"expires_in"`
 	AccessToken string `json:"access_token"`
+}
+
+type UserRequest struct {
+	User    string `json:"usuario"`
+	Cabinet string `json:"armario"`
 }
 
 func GetToken() (*Token, error) {
@@ -78,13 +84,49 @@ func GetToken() (*Token, error) {
 	return &token, nil
 }
 
-func GetUser(id string) (models.User, error) {
-	for _, u := range testUsers {
-		if u.ID == id {
-			return u, nil
-		}
+func GetUser(token *Token, id string, cabinet string) (models.User, error) {
+	// url
+	u, _ := url.ParseRequestURI(apiURL)
+	u.Path = userPath
+
+	// body
+	userRequest := UserRequest{User: id, Cabinet: cabinet}
+	jsonBody, err := json.Marshal(userRequest)
+	if err != nil {
+		return models.User{}, errors.New("Problem encoding user request")
 	}
-	return models.User{}, errors.New("no such user")
+
+	// make request
+	client := &http.Client{}
+	r, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return models.User{}, errors.New("Can't create user request")
+	}
+	r.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	r.Header.Add("Authorization", "Bearer "+token.AccessToken)
+
+	resp, err := client.Do(r)
+	if err != nil {
+		return models.User{}, errors.New("Can't execute user request")
+	}
+
+	// parse response
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return models.User{}, errors.New("Can't parse user response body")
+	}
+	var user models.User
+	if err := json.Unmarshal(body, &user); err != nil {
+		return models.User{}, errors.New("Can't parse user response json")
+	}
+
+	// check response
+	if user.Code == 1 {
+		return user, nil
+	} else {
+		return models.User{}, errors.New("no such user")
+	}
 }
 
 func GetTupper(id string) (models.Tupper, error) {
