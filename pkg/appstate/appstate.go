@@ -39,6 +39,10 @@ func (a *AppState) Token() *api.Token {
 	return a.token
 }
 
+func (a *AppState) SetToken(t *api.Token) {
+	a.token = t
+}
+
 func (a *AppState) SetLang(lang string) {
 	a.lang = lang
 }
