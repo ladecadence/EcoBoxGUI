@@ -133,7 +133,7 @@ func main() {
 					ChangeScreen(appState, mainWindow)
 					recv := <-qrData
 					fmt.Printf("QR Data: %s\n", recv)
-					user, err := api.GetUser(strings.TrimSpace(string(recv)))
+					user, err := api.GetUser(appState.Token(), strings.TrimSpace(string(recv)), config.Cabinet)
 					if err != nil {
 						appState.SetState(appstate.StateUserError)
 					} else {
