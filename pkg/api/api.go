@@ -117,12 +117,13 @@ func GetUser(token *Token, id string, cabinet string) (models.User, error) {
 	if err != nil {
 		return models.User{}, errors.New("Can't parse user response body")
 	}
+
+	fmt.Println(string(body))
+
 	var user models.User
 	if err := json.Unmarshal(body, &user); err != nil {
 		return models.User{}, errors.New("Can't parse user response json")
 	}
-
-	fmt.Println(string(body))
 
 	// check response
 	if user.Result == 1 {
