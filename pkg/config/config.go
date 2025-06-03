@@ -8,7 +8,7 @@ const (
 
 type Config struct {
 	ConfFile string
-	ID       string `toml:"id"`
+	Cabinet  string `toml:"cabinet"`
 	Database string `toml:"database"`
 	QRPort   string `toml:"qr_port"`
 	RFIDPort string `toml:"rfid_port"`
