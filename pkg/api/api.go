@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -121,6 +122,7 @@ func GetUser(token *Token, id string, cabinet string) (models.User, error) {
 		return models.User{}, errors.New("Can't parse user response json")
 	}
 
+	fmt.Println(user)
 	// check response
 	if user.Result == 1 {
 		return user, nil
