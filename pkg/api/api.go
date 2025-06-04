@@ -225,7 +225,7 @@ func Close(token *Token, id string, cabinet string) (models.Response, error) {
 func GetContainers(token *Token, cabinet string) ([]models.Container, error) {
 	// url
 	u, _ := url.ParseRequestURI(apiURL)
-	u.Path = closePath
+	u.Path = containersPath
 
 	// body
 	containerRequest := ContainerRequest{Cabinet: cabinet, Containers: []models.Container{}}
