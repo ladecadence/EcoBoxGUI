@@ -14,26 +14,19 @@ import (
 )
 
 const (
-	apiURL      = "https://ecobox.clienteslotura.com"
-	tokenPath   = "/api/oauth/token"
-	userPath    = "/api/usuario"
-	openPath    = "/api/armario/apertura"
-	closePath   = "/api/armario/cierre"
-	adquirePath = "/api/contenedor/adquisicion"
-	returnPath  = "/api/contenedor/devolucion"
+	apiURL         = "https://ecobox.clienteslotura.com"
+	tokenPath      = "/api/oauth/token"
+	userPath       = "/api/usuario"
+	openPath       = "/api/armario/apertura"
+	closePath      = "/api/armario/cierre"
+	adquirePath    = "/api/contenedor/adquisicion"
+	returnPath     = "/api/contenedor/devolucion"
+	containersPath = "/api/contenedor/"
 )
 
 var testUsers = []models.User{
 	{ID: 0, Name: "Perico"},
 	{ID: 1, Name: "Manolo"},
-}
-
-var testTuppers = []models.Tupper{
-	{ID: "300833b2ddd9014000000001", Number: 1},
-	{ID: "300833b2ddd9014000000002", Number: 2},
-	{ID: "300833b2ddd9014000000003", Number: 3},
-	{ID: "300833b2ddd9014000000004", Number: 4},
-	{ID: "300833b2ddd9014000000005", Number: 5},
 }
 
 type Token struct {
@@ -45,6 +38,11 @@ type Token struct {
 type ApiRequest struct {
 	User    string `json:"usuario"`
 	Cabinet string `json:"armario"`
+}
+
+type ContainerRequest struct {
+	Cabinet    string             `json:"armario"`
+	Containers []models.Container `json:"contenedores"`
 }
 
 func GetToken() (*Token, error) {
@@ -224,11 +222,47 @@ func Close(token *Token, id string, cabinet string) (models.Response, error) {
 	}
 }
 
-func GetTupper(id string) (models.Tupper, error) {
-	for _, t := range testTuppers {
-		if t.ID == id {
-			return t, nil
-		}
+func GetContainers(token *Token, cabinet string) ([]models.Container, error) {
+	// url
+	u, _ := url.ParseRequestURI(apiURL)
+	u.Path = closePath
+
+	// body
+	containerRequest := ContainerRequest{Cabinet: cabinet, Containers: []models.Container{}}
+	jsonBody, err := json.Marshal(containerRequest)
+	if err != nil {
+		return nil, errors.New("Problem encoding container request")
 	}
-	return models.Tupper{}, errors.New("no such tupper")
+	// make request
+	client := &http.Client{}
+	r, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return []models.Container{}, errors.New("Can't create container request")
+	}
+	r.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	r.Header.Add("Authorization", "Bearer "+token.AccessToken)
+
+	resp, err := client.Do(r)
+	if err != nil {
+		return []models.Container{}, errors.New("Can't execute container request")
+	}
+
+	// parse response
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return []models.Container{}, errors.New("Can't parse container response body")
+	}
+
+	var containers models.Containers
+	if err := json.Unmarshal(body, &containers); err != nil {
+		return []models.Container{}, errors.New("Can't parse container response json")
+	}
+
+	// check response
+	if containers.Result == 1 {
+		return containers.Containers, nil
+	} else {
+		return []models.Container{}, errors.New("Problem with container request")
+	}
 }

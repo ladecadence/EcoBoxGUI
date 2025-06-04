@@ -1,6 +1,8 @@
 package screens
 
 import (
+	"fmt"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
@@ -31,13 +33,13 @@ func NewConfirmTuppers(a *appstate.AppState) *ConfirmTuppers {
 	c.labelConfirm = canvas.NewText(languages.GetString("confirm.confirm", c.state.Lang()), theme.Color(theme.ColorNameForeground))
 	c.labelConfirm.TextSize = 20
 	c.labelConfirm.Alignment = fyne.TextAlignCenter
-	switch a.NumTuppers() {
+	switch a.NumContainers() {
 	case 0:
 		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.none", c.state.Lang()), theme.Color(theme.ColorNameForeground))
 	case 1:
-		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.sing", c.state.Lang())+a.TupperListString(), theme.Color(theme.ColorNameForeground))
+		c.labelMsg = canvas.NewText(fmt.Sprintf(languages.GetString("confirm.msg.sing", c.state.Lang()), a.NumContainers()), theme.Color(theme.ColorNameForeground))
 	default:
-		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.plur", c.state.Lang())+a.TupperListString(), theme.Color(theme.ColorNameForeground))
+		c.labelMsg = canvas.NewText(fmt.Sprintf(languages.GetString("confirm.msg.plur", c.state.Lang()), a.NumContainers()), theme.Color(theme.ColorNameForeground))
 	}
 
 	c.labelMsg.TextSize = 15
@@ -56,13 +58,13 @@ func NewConfirmTuppers(a *appstate.AppState) *ConfirmTuppers {
 func (c *ConfirmTuppers) UpdateLanguage(lang string) {
 	c.state.SetLang(lang)
 	c.labelConfirm.Text = languages.GetString("confirm.confirm", lang)
-	switch c.state.NumTuppers() {
+	switch c.state.NumContainers() {
 	case 0:
 		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.none", c.state.Lang()), theme.Color(theme.ColorNameForeground))
 	case 1:
-		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.sing", c.state.Lang())+c.state.TupperListString(), theme.Color(theme.ColorNameForeground))
+		c.labelMsg = canvas.NewText(fmt.Sprintf(languages.GetString("confirm.msg.sing", c.state.Lang()), c.state.NumContainers()), theme.Color(theme.ColorNameForeground))
 	default:
-		c.labelMsg = canvas.NewText(languages.GetString("confirm.msg.plur", c.state.Lang())+c.state.TupperListString(), theme.Color(theme.ColorNameForeground))
+		c.labelMsg = canvas.NewText(fmt.Sprintf(languages.GetString("confirm.msg.plur", c.state.Lang()), c.state.NumContainers()), theme.Color(theme.ColorNameForeground))
 	}
 	c.okButton.SetText(languages.GetString("confirm.button", lang))
 }

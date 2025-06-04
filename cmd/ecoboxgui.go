@@ -77,17 +77,28 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	// get all tags and store them in database (upsert)
-	responses, err := rfid.ReadTags()
-	for _, r := range responses {
-		fmt.Println("Tag: ", hex.EncodeToString(r.EPC))
-		tupper, err := api.GetTupper(hex.EncodeToString(r.EPC))
-		if err != nil {
-			// TODO
-			continue
-		}
-		invent.InsertTupper(tupper)
-		fmt.Printf("Start tupper: %s\n", tupper.ID)
+	// responses, err := rfid.ReadTags()
+	// for _, r := range responses {
+	// 	fmt.Println("Tag: ", hex.EncodeToString(r.EPC))
+	// 	tupper, err := api.GetTupper(hex.EncodeToString(r.EPC))
+	// 	if err != nil {
+	// 		// TODO
+	// 		continue
+	// 	}
+	// 	invent.InsertTupper(tupper)
+	// 	fmt.Printf("Start tupper: %s\n", tupper.ID)
+	// }
+
+	// get all containers from API for this cabinet
+	containers, err := api.GetContainers(appState.Token(), config.Cabinet)
+	if err != nil {
+		panic(err)
+	}
+	// store in local DB
+	for _, c := range containers {
+		invent.InsertContainer(c)
 	}
 
 	// Door
@@ -129,7 +140,7 @@ func main() {
 				case appstate.StateWelcome:
 					// start, welcome screen and listen for QR code
 					appState.ClearUser()
-					appState.DeleteTuppers()
+					appState.DeleteContainers()
 					ChangeScreen(appState, mainWindow)
 					recv := <-qrData
 					fmt.Printf("QR Data: %s\n", recv)
@@ -161,6 +172,7 @@ func main() {
 				case appstate.StateUserError:
 					ChangeScreen(appState, mainWindow)
 				case appstate.StateOpened:
+					api.Open(appState.Token(), appState.User().Name, config.Cabinet)
 					ChangeScreen(appState, mainWindow)
 					// ok wait for door to close
 					for door.IsOpen() {
@@ -169,6 +181,7 @@ func main() {
 					// ok, now we need to make the inventory
 					appState.SetState(appstate.StateClosed)
 				case appstate.StateClosed:
+					api.Close(appState.Token(), appState.User().Name, config.Cabinet)
 					ChangeScreen(appState, mainWindow)
 					// read tags
 					tags, err := rfid.ReadTags()
@@ -176,7 +189,7 @@ func main() {
 						// RFID ERROR SCREEN?
 					}
 					// check database
-					dbTuppers, err := invent.GetTuppers()
+					dbContainers, err := invent.GetContainers()
 					if err != nil {
 						// DB ERROR?
 					}
@@ -184,23 +197,23 @@ func main() {
 					for _, t := range tags {
 						tag := hex.EncodeToString(t.EPC)
 						fmt.Println("Tag:", tag)
-						for i, tupper := range dbTuppers {
-							if tupper.ID == tag {
-								dbTuppers = slices.Delete(dbTuppers, i, i+1)
+						for i, container := range dbContainers {
+							if container.Code == tag {
+								dbContainers = slices.Delete(dbContainers, i, i+1)
 							}
 						}
 					}
-					fmt.Println(dbTuppers)
+					fmt.Println(dbContainers)
 					// add to state
-					for _, t := range dbTuppers {
-						appState.AddTupper(t.Number)
+					for _, t := range dbContainers {
+						appState.AddContainer(t.Code)
 					}
 					// change state
 					appState.SetState(appstate.StateChecked)
 				case appstate.StateChecked:
 					// ok, remove tuppers from inventory
-					for _, t := range appState.TuppersTaken() {
-						invent.DeleteTupperByNum(t)
+					for _, t := range appState.ContainersTaken() {
+						invent.DeleteContainerByCode(t)
 					}
 					ChangeScreen(appState, mainWindow)
 				}

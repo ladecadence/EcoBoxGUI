@@ -22,7 +22,7 @@ func New(file string) (*Inventory, error) {
 
 	i.db = database
 
-	err = i.db.AutoMigrate(&models.Tupper{})
+	err = i.db.AutoMigrate(&models.Container{})
 	if err != nil {
 		return nil, err
 	}
@@ -30,31 +30,31 @@ func New(file string) (*Inventory, error) {
 	return &i, nil
 }
 
-func (i *Inventory) GetTuppers() ([]models.Tupper, error) {
-	var tuppers []models.Tupper
-	result := i.db.Find(&tuppers)
-	return tuppers, result.Error
+func (i *Inventory) GetContainers() ([]models.Container, error) {
+	var containers []models.Container
+	result := i.db.Find(&containers)
+	return containers, result.Error
 }
 
-func (i *Inventory) InsertTupper(t models.Tupper) error {
+func (i *Inventory) InsertContainer(t models.Container) error {
 	result := i.db.Clauses(clause.OnConflict{
 		UpdateAll: true,
 	}).Create(&t)
 	return result.Error
 }
 
-func (i *Inventory) DeleteTupper(t models.Tupper) error {
+func (i *Inventory) DeleteContainer(t models.Container) error {
 	result := i.db.Delete(&t)
 	return result.Error
 }
 
-func (i *Inventory) DeleteTupperByNum(number int) error {
-	result := i.db.Where("number = ?", number).Delete(&models.Tupper{})
+func (i *Inventory) DeleteContainerByCode(code string) error {
+	result := i.db.Where("code = ?", code).Delete(&models.Container{})
 	return result.Error
 }
 
-func (i *Inventory) GetTupper(id string) (models.Tupper, error) {
-	var tupper models.Tupper
-	result := i.db.Where("id=?", id).First(&tupper)
-	return tupper, result.Error
+func (i *Inventory) GetContainer(code string) (models.Container, error) {
+	var container models.Container
+	result := i.db.Where("code=?", code).First(&container)
+	return container, result.Error
 }

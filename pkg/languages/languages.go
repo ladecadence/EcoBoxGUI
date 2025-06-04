@@ -14,8 +14,8 @@ var eus = map[string]string{
 	"closed.msg":       "Itxaron pixka bat aldaketak egiaztatzen ditugun bitartean, mesedez.",
 	"confirm.confirm":  "Baieztatu zure eragiketa",
 	"confirm.msg.none": "Ez duzu ontzirik erretiratu",
-	"confirm.msg.sing": "Ontzia kendu duzu: ",
-	"confirm.msg.plur": "Ontziak kendu dituzu: ",
+	"confirm.msg.sing": "Ontzia %d kendu duzu",
+	"confirm.msg.plur": "Ontziak %d kendu dituzu",
 	"confirm.button":   "Zuzena",
 }
 
@@ -33,8 +33,8 @@ var es = map[string]string{
 	"closed.msg":       "Espera un momento mientras verificamos los cambios, por favor.",
 	"confirm.confirm":  "Confirma tu operación",
 	"confirm.msg.none": "No has retirado nigún envase",
-	"confirm.msg.sing": "Has retirado el envase: ",
-	"confirm.msg.plur": "Has retirado los envases: ",
+	"confirm.msg.sing": "Has retirado %d envase",
+	"confirm.msg.plur": "Has retirado %d envases",
 	"confirm.button":   "Correcto",
 }
 
@@ -52,8 +52,8 @@ var en = map[string]string{
 	"closed.msg":       "Please wait a moment while we check the changes.",
 	"confirm.confirm":  "Confirm your operation",
 	"confirm.msg.none": "You haven't taken any containers",
-	"confirm.msg.sing": "You have taken the container: ",
-	"confirm.msg.plur": "You have taken the containers: ",
+	"confirm.msg.sing": "You have taken %d container",
+	"confirm.msg.plur": "You have taken %d containers",
 	"confirm.button":   "Ok",
 }
 

@@ -2,7 +2,6 @@ package appstate
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/ladecadence/EcoBoxGUI/pkg/api"
@@ -21,17 +20,17 @@ const (
 )
 
 type AppState struct {
-	lang         string
-	state        int
-	user         *models.User
-	token        *api.Token
-	stateChanged bool
-	tuppersTaken []int
+	lang            string
+	state           int
+	user            *models.User
+	token           *api.Token
+	stateChanged    bool
+	containersTaken []string
 }
 
 func New(lang string, token *api.Token) *AppState {
 	a := AppState{lang: lang, token: token, state: StateWelcome, stateChanged: false, user: nil}
-	a.tuppersTaken = []int{}
+	a.containersTaken = []string{}
 	return &a
 }
 
@@ -81,26 +80,26 @@ func (a *AppState) ClearUser() {
 	a.user = nil
 }
 
-func (a *AppState) TuppersTaken() []int {
-	return a.tuppersTaken
+func (a *AppState) ContainersTaken() []string {
+	return a.containersTaken
 }
 
-func (a *AppState) AddTupper(number int) {
-	a.tuppersTaken = append(a.tuppersTaken, number)
+func (a *AppState) AddContainer(code string) {
+	a.containersTaken = append(a.containersTaken, code)
 }
 
-func (a *AppState) DeleteTuppers() {
-	a.tuppersTaken = []int{}
+func (a *AppState) DeleteContainers() {
+	a.containersTaken = []string{}
 }
 
-func (a *AppState) NumTuppers() int {
-	return len(a.tuppersTaken)
+func (a *AppState) NumContainers() int {
+	return len(a.containersTaken)
 }
 
-func (a *AppState) TupperListString() string {
+func (a *AppState) ContainerListString() string {
 	list := ""
-	for _, t := range a.tuppersTaken {
-		list = list + strconv.Itoa(t) + ","
+	for _, t := range a.containersTaken {
+		list = list + t + ","
 	}
 	// remove last ","
 	list = strings.TrimSuffix(list, ",")
