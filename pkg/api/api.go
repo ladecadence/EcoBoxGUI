@@ -263,6 +263,7 @@ func GetContainers(token *Token, cabinet string) ([]models.Container, error) {
 	if containers.Result == 1 {
 		return containers.Containers, nil
 	} else {
+		fmt.Println(containers)
 		return []models.Container{}, errors.New("Problem with container request")
 	}
 }
