@@ -45,6 +45,12 @@ type ContainerRequest struct {
 	Containers []models.Container `json:"contenedores"`
 }
 
+type InventoryRequest struct {
+	User       string             `json:"usuario"`
+	Cabinet    string             `json:"armario"`
+	Containers []models.Container `json:"contenedores"`
+}
+
 func GetToken() (*Token, error) {
 	// Form URL Encoded data
 	data := url.Values{}
