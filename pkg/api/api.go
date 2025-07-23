@@ -35,7 +35,7 @@ type Token struct {
 	AccessToken string `json:"access_token"`
 }
 
-type ApiRequest struct {
+type UserRequest struct {
 	User    string `json:"usuario"`
 	Cabinet string `json:"armario"`
 }
@@ -43,6 +43,12 @@ type ApiRequest struct {
 type ContainerRequest struct {
 	Cabinet    string             `json:"armario"`
 	Containers []models.Container `json:"contenedores"`
+}
+
+type AdquireRequest struct {
+	Cabinet    string   `json:"armario"`
+	User       string   `json:"usuario"`
+	Containers []string `json:"contenedores"`
 }
 
 type InventoryRequest struct {
@@ -89,13 +95,13 @@ func GetToken() (*Token, error) {
 	return &token, nil
 }
 
-func GetUser(token *Token, id string, cabinet string) (models.User, error) {
+func GetUser(token *Token, code string, cabinet string) (models.User, error) {
 	// url
 	u, _ := url.ParseRequestURI(apiURL)
 	u.Path = userPath
 
 	// body
-	userRequest := ApiRequest{User: id, Cabinet: cabinet}
+	userRequest := UserRequest{User: code, Cabinet: cabinet}
 	jsonBody, err := json.Marshal(userRequest)
 	if err != nil {
 		return models.User{}, errors.New("Problem encoding user request")
@@ -131,6 +137,7 @@ func GetUser(token *Token, id string, cabinet string) (models.User, error) {
 
 	// check response
 	if user.Result == 1 {
+		user.Code = code
 		return user, nil
 	} else {
 		return models.User{}, errors.New("no such user")
@@ -143,7 +150,7 @@ func Open(token *Token, id string, cabinet string) (models.Response, error) {
 	u.Path = openPath
 
 	// body
-	userRequest := ApiRequest{User: id, Cabinet: cabinet}
+	userRequest := UserRequest{User: id, Cabinet: cabinet}
 	jsonBody, err := json.Marshal(userRequest)
 	if err != nil {
 		return models.Response{}, errors.New("Problem encoding open request")
@@ -189,7 +196,7 @@ func Close(token *Token, id string, cabinet string) (models.Response, error) {
 	u.Path = closePath
 
 	// body
-	userRequest := ApiRequest{User: id, Cabinet: cabinet}
+	userRequest := UserRequest{User: id, Cabinet: cabinet}
 	jsonBody, err := json.Marshal(userRequest)
 	if err != nil {
 		return models.Response{}, errors.New("Problem encoding close request")
@@ -271,5 +278,53 @@ func GetContainers(token *Token, cabinet string) ([]models.Container, error) {
 	} else {
 		fmt.Println(containers)
 		return []models.Container{}, errors.New("Problem with container request")
+	}
+}
+
+func AdquireContainers(token *Token, user string, cabinet string, containers []string) error {
+	// url
+	u, _ := url.ParseRequestURI(apiURL)
+	u.Path = adquirePath
+
+	// create body data
+
+	// body
+	containerRequest := AdquireRequest{Cabinet: cabinet, User: user, Containers: containers}
+	jsonBody, err := json.Marshal(containerRequest)
+	if err != nil {
+		return errors.New("Problem encoding adquire request")
+	}
+	// make request
+	client := &http.Client{}
+	r, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return errors.New("Can't create adquire request")
+	}
+	r.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	r.Header.Add("Authorization", "Bearer "+token.AccessToken)
+
+	resp, err := client.Do(r)
+	if err != nil {
+		return errors.New("Can't execute container request")
+	}
+
+	// parse response
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return errors.New("Can't parse container response body")
+	}
+
+	var answer models.Containers
+	if err := json.Unmarshal(body, &containers); err != nil {
+		return errors.New("Can't parse container response json")
+	}
+
+	// check response
+	if answer.Result == 1 {
+		return nil
+	} else {
+		fmt.Println(containers)
+		return errors.New("Problem with container request")
 	}
 }
