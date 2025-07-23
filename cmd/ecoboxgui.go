@@ -215,6 +215,13 @@ func main() {
 					for _, t := range appState.ContainersTaken() {
 						invent.DeleteContainerByCode(t)
 					}
+					// and from API
+					err = api.AdquireContainers(token, appState.User().Code, config.Cabinet, appState.ContainersTaken())
+					if err != nil {
+						appState.SetState(appstate.StateError)
+					}
+					ChangeScreen(appState, mainWindow)
+				case appstate.StateError:
 					ChangeScreen(appState, mainWindow)
 				}
 			}
