@@ -41,6 +41,9 @@ func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 	case appstate.StateChecked:
 		mainContainer := screens.NewConfirmTuppers(a).Container
 		fyne.Do(func() { main.SetContent(mainContainer) })
+	case appstate.StateError:
+		mainContainer := screens.NewError(a).Container
+		fyne.Do(func() { main.SetContent(mainContainer) })
 	}
 }
 

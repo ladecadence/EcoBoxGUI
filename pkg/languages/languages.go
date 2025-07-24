@@ -17,6 +17,9 @@ var eus = map[string]string{
 	"confirm.msg.sing": "Ontzia %d kendu duzu",
 	"confirm.msg.plur": "Ontziak %d kendu dituzu",
 	"confirm.button":   "Zuzena",
+	"error.error":      "Error comunicando con el servidor",
+	"error.msg":        "Mesedez, saiatu berriro",
+	"error.button":     "Ados",
 }
 
 var es = map[string]string{
@@ -36,6 +39,9 @@ var es = map[string]string{
 	"confirm.msg.sing": "Has retirado %d envase",
 	"confirm.msg.plur": "Has retirado %d envases",
 	"confirm.button":   "Correcto",
+	"error.error":      "Error comunicando con el servidor",
+	"error.msg":        "Por favor inténtalo de nuevo",
+	"error.button":     "De acuerdo",
 }
 
 var en = map[string]string{
@@ -55,6 +61,9 @@ var en = map[string]string{
 	"confirm.msg.sing": "You have taken %d container",
 	"confirm.msg.plur": "You have taken %d containers",
 	"confirm.button":   "Ok",
+	"error.error":      "Error talking to the server.",
+	"error.msg":        "Please try again",
+	"error.button":     "Ok",
 }
 
 func GetString(id string, lang string) string {
