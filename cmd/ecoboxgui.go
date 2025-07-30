@@ -165,6 +165,8 @@ func main() {
 					ChangeScreen(appState, mainWindow)
 					recv := <-qrData
 					// check for special codes
+					fmt.Printf("%x\n", recv)
+					fmt.Printf("%x\n", []byte(QR_INIT_CABINET))
 					if bytes.Equal(recv, []byte(QR_INIT_CABINET)) {
 						// ok, init cabinet
 						fmt.Printf("Init cabinet!")
