@@ -28,13 +28,13 @@ func NewError(a *appstate.AppState) *Error {
 	logo.FillMode = canvas.ImageFillOriginal
 	spacer := layout.NewSpacer()
 	spacer.Resize(fyne.NewSize(1000, 100))
-	h.labelError = canvas.NewText(languages.GetString("nouser.error", h.state.Lang()), theme.Color(theme.ColorNameForeground))
+	h.labelError = canvas.NewText(languages.GetString("error.error", h.state.Lang()), theme.Color(theme.ColorNameForeground))
 	h.labelError.TextSize = 20
 	h.labelError.Alignment = fyne.TextAlignCenter
-	h.labelMsg = canvas.NewText(languages.GetString("nouser.msg", h.state.Lang()), theme.Color(theme.ColorNameForeground))
+	h.labelMsg = canvas.NewText(languages.GetString("error.msg", h.state.Lang()), theme.Color(theme.ColorNameForeground))
 	h.labelMsg.TextSize = 15
 	h.labelMsg.Alignment = fyne.TextAlignCenter
-	h.okButton = widget.NewButton(languages.GetString("nouser.button", h.state.Lang()), func() {
+	h.okButton = widget.NewButton(languages.GetString("error.button", h.state.Lang()), func() {
 		h.state.SetState(appstate.StateWelcome)
 	})
 	hBox := container.NewHBox(layout.NewSpacer(), h.okButton, layout.NewSpacer())
@@ -47,7 +47,7 @@ func NewError(a *appstate.AppState) *Error {
 
 func (h *Error) UpdateLanguage(lang string) {
 	h.state.SetLang(lang)
-	h.labelError.Text = languages.GetString("nouser.error", lang)
-	h.labelMsg.Text = languages.GetString("nouser.msg", lang)
-	h.okButton.SetText(languages.GetString("nouser.button", lang))
+	h.labelError.Text = languages.GetString("error.error", lang)
+	h.labelMsg.Text = languages.GetString("error.msg", lang)
+	h.okButton.SetText(languages.GetString("error.button", lang))
 }
