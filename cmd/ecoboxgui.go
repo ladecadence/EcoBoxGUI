@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	QR_INIT_CABINET = "****INIT CABINET****\n"
+	QR_INIT_CABINET = "****INIT CABINET****"
 )
 
 func ReadAllTags(rfid r200.R200) ([]string, error) {
@@ -164,6 +164,7 @@ func main() {
 					appState.DeleteContainers()
 					ChangeScreen(appState, mainWindow)
 					recv := <-qrData
+					recv = bytes.Trim(recv, "\n\r")
 					// check for special codes
 					if bytes.Equal(recv, []byte(QR_INIT_CABINET)) {
 						// ok, init cabinet
