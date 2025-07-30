@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/hex"
 	"fmt"
 	"slices"
@@ -20,6 +21,23 @@ import (
 	"github.com/ladecadence/EcoBoxGUI/pkg/screens"
 	r200 "github.com/ladecadence/GoR200"
 )
+
+const (
+	QR_INIT_CABINET = "****INIT CABINET****"
+)
+
+func ReadAllTags(rfid r200.R200) ([]string, error) {
+	responses, err := rfid.ReadTags()
+	if err != nil {
+		return nil, err
+	}
+	var tags []string
+	for _, r := range responses {
+		fmt.Println("Tag: ", hex.EncodeToString(r.EPC))
+		tags = append(tags, hex.EncodeToString(r.EPC))
+	}
+	return tags, nil
+}
 
 func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 	switch a.State() {
@@ -146,6 +164,16 @@ func main() {
 					appState.DeleteContainers()
 					ChangeScreen(appState, mainWindow)
 					recv := <-qrData
+					// check for special codes
+					if bytes.Equal(recv, []byte(QR_INIT_CABINET)) {
+						// ok, init cabinet
+						fmt.Printf("Init cabinet!")
+						tags, err := ReadAllTags(rfid)
+						if err != nil {
+							break
+						}
+						fmt.Println(tags)
+					}
 					fmt.Printf("QR Data: %s\n", recv)
 					// get auth token
 					token, err := api.GetToken()
