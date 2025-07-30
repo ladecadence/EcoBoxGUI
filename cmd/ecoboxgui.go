@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	QR_INIT_CABINET = "****INIT CABINET****"
+	QR_INIT_CABINET = "****INIT CABINET****\n"
 )
 
 func ReadAllTags(rfid r200.R200) ([]string, error) {
@@ -165,8 +165,6 @@ func main() {
 					ChangeScreen(appState, mainWindow)
 					recv := <-qrData
 					// check for special codes
-					fmt.Printf("%x\n", recv)
-					fmt.Printf("%x\n", []byte(QR_INIT_CABINET))
 					if bytes.Equal(recv, []byte(QR_INIT_CABINET)) {
 						// ok, init cabinet
 						fmt.Printf("Init cabinet!")
@@ -175,6 +173,8 @@ func main() {
 							break
 						}
 						fmt.Println(tags)
+						appState.SetState(appstate.StateWelcome)
+						break
 					}
 					fmt.Printf("QR Data: %s\n", recv)
 					// get auth token
