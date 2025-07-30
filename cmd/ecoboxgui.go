@@ -165,6 +165,7 @@ func main() {
 					ChangeScreen(appState, mainWindow)
 					recv := <-qrData
 					recv = bytes.Trim(recv, "\n\r")
+
 					// check for special codes
 					if bytes.Equal(recv, []byte(QR_INIT_CABINET)) {
 						// ok, init cabinet
@@ -172,6 +173,7 @@ func main() {
 						tags, err := ReadAllTags(rfid)
 						if err != nil {
 							fmt.Println("Error reading tags: ", err.Error())
+							appState.SetState(appstate.StateError)
 							break
 						}
 						fmt.Println(tags)
