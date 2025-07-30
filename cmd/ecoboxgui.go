@@ -28,7 +28,8 @@ const (
 
 func ReadAllTags(rfid r200.R200) ([]string, error) {
 	responses, err := rfid.ReadTags()
-	if err != nil {
+	// we can have an error in one of the multiple reads but still get some data
+	if err != nil && responses == nil {
 		return nil, err
 	}
 	var tags []string
