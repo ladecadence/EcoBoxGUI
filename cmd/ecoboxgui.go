@@ -171,7 +171,7 @@ func main() {
 						fmt.Println("Init cabinet!")
 						tags, err := ReadAllTags(rfid)
 						if err != nil {
-							fmt.Println("Error reading tags")
+							fmt.Println("Error reading tags: ", err.Error())
 							break
 						}
 						fmt.Println(tags)
