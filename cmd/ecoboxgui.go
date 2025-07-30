@@ -168,9 +168,10 @@ func main() {
 					// check for special codes
 					if bytes.Equal(recv, []byte(QR_INIT_CABINET)) {
 						// ok, init cabinet
-						fmt.Printf("Init cabinet!")
+						fmt.Println("Init cabinet!")
 						tags, err := ReadAllTags(rfid)
 						if err != nil {
+							fmt.Println("Error reading tags")
 							break
 						}
 						fmt.Println(tags)
