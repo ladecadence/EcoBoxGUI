@@ -305,19 +305,19 @@ func AdquireContainers(token *Token, user string, cabinet string, containers []s
 
 	resp, err := client.Do(r)
 	if err != nil {
-		return errors.New("Can't execute container request")
+		return errors.New("Can't execute adquire request")
 	}
 
 	// parse response
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return errors.New("Can't parse container response body")
+		return errors.New("Can't parse adquire response body")
 	}
 
 	var answer models.Containers
 	if err := json.Unmarshal(body, &containers); err != nil {
-		return errors.New("Can't parse container response json")
+		return errors.New("Can't parse adquire response json")
 	}
 
 	// check response
@@ -325,6 +325,54 @@ func AdquireContainers(token *Token, user string, cabinet string, containers []s
 		return nil
 	} else {
 		fmt.Println(containers)
-		return errors.New("Problem with container request")
+		return errors.New("Problem with adquire request")
+	}
+}
+
+func ReturnContainers(token *Token, user string, cabinet string, containers []string) error {
+	// url
+	u, _ := url.ParseRequestURI(apiURL)
+	u.Path = returnPath
+
+	// create body data
+
+	// body
+	containerRequest := AdquireRequest{Cabinet: cabinet, User: user, Containers: containers}
+	jsonBody, err := json.Marshal(containerRequest)
+	if err != nil {
+		return errors.New("Problem encoding return request")
+	}
+	// make request
+	client := &http.Client{}
+	r, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return errors.New("Can't create return request")
+	}
+	r.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	r.Header.Add("Authorization", "Bearer "+token.AccessToken)
+
+	resp, err := client.Do(r)
+	if err != nil {
+		return errors.New("Can't execute return request")
+	}
+
+	// parse response
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return errors.New("Can't parse return response body")
+	}
+
+	var answer models.Containers
+	if err := json.Unmarshal(body, &containers); err != nil {
+		return errors.New("Can't parse return response json")
+	}
+
+	// check response
+	if answer.Result == 1 {
+		return nil
+	} else {
+		fmt.Println(containers)
+		return errors.New("Problem with return request")
 	}
 }
