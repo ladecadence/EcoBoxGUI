@@ -12,6 +12,7 @@ type Config struct {
 	Database string `toml:"database"`
 	QRPort   string `toml:"qr_port"`
 	RFIDPort string `toml:"rfid_port"`
+	QRPass   string `toml:"qr_pass"`
 	Version  string
 }
 

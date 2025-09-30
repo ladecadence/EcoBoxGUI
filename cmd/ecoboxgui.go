@@ -169,7 +169,7 @@ func main() {
 					recv = bytes.Trim(recv, "\n\r")
 
 					// check for special codes
-					if bytes.Equal(recv, []byte(QR_INIT_CABINET)) {
+					if bytes.Equal(recv, []byte(QR_INIT_CABINET+config.QRPass)) {
 						// ok, init cabinet
 						fmt.Println("Init cabinet!")
 						tags, err := ReadAllTags(rfid)
@@ -182,7 +182,7 @@ func main() {
 						appState.SetState(appstate.StateWelcome)
 						break
 					}
-					if bytes.Equal(recv, []byte(QR_OPEN_DOOR)) {
+					if bytes.Equal(recv, []byte(QR_OPEN_DOOR+config.QRPass)) {
 						// ok, open door
 						fmt.Println("Open Door!")
 						door.Open()
