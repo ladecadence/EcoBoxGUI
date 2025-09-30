@@ -24,6 +24,7 @@ import (
 
 const (
 	QR_INIT_CABINET = "****INIT CABINET****"
+	QR_OPEN_DOOR    = "****OPEN DOOR****"
 )
 
 func ReadAllTags(rfid r200.R200) ([]string, error) {
@@ -181,6 +182,15 @@ func main() {
 						appState.SetState(appstate.StateWelcome)
 						break
 					}
+					if bytes.Equal(recv, []byte(QR_OPEN_DOOR)) {
+						// ok, open door
+						fmt.Println("Open Door!")
+						door.Open()
+						appState.SetState(appstate.StateWelcome)
+						break
+					}
+
+					// ok, no special codes, check user
 					fmt.Printf("QR Data: %s\n", recv)
 					// get auth token
 					token, err := api.GetToken()
