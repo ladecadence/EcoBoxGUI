@@ -1,3 +1,5 @@
+//go:build !return
+
 package main
 
 import (
