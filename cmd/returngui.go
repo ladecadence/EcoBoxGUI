@@ -96,5 +96,6 @@ func main() {
 	border := container.NewBorder(vBox, returnButton, nil, nil, tagList)
 	mainWindow.SetContent(border)
 
+	mainWindow.Resize(fyne.NewSize(800, 600))
 	mainWindow.ShowAndRun()
 }
