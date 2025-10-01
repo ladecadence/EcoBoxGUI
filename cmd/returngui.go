@@ -5,8 +5,6 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	"math/rand/v2"
-	"strconv"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -52,10 +50,10 @@ func main() {
 	fmt.Println(token)
 
 	// RFID reader
-	// rfid, err := r200.New(config.RFIDPort, 115200, false)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	rfid, err := r200.New(config.RFIDPort, 115200, false)
+	if err != nil {
+		panic(err)
+	}
 
 	// app
 	app := app.New()
@@ -81,7 +79,12 @@ func main() {
 
 		fmt.Println("Reading")
 		tagsRFID.Set([]string{})
-		tagsRFID.Append(strconv.Itoa(rand.IntN(100)))
+		tags, err := ReadAllTags(rfid)
+		if err != nil {
+
+		} else {
+			tagsRFID.Set(tags)
+		}
 	})
 
 	returnButton := widget.NewButton("Return Containers", func() {
