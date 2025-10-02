@@ -281,6 +281,11 @@ func GetContainers(token *Token, cabinet string) ([]models.Container, error) {
 	}
 }
 
+func InitCabinet(token *Token, containers []string) error {
+
+	return nil
+}
+
 func AdquireContainers(token *Token, user string, cabinet string, containers []string) error {
 	// url
 	u, _ := url.ParseRequestURI(apiURL)
