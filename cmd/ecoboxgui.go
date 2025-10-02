@@ -69,6 +69,35 @@ func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 	}
 }
 
+func InitCabinet(appState *appstate.AppState, rfid r200.R200, invent *inventory.Inventory) error {
+	fmt.Println("Init cabinet!")
+	// get auth token
+	token, err := api.GetToken()
+	if err != nil {
+		appState.SetState(appstate.StateError)
+		return err
+	}
+	appState.SetToken(token)
+	// RFID
+	tags, err := ReadAllTags(rfid)
+	if err != nil {
+		fmt.Println("Error reading tags: ", err.Error())
+		appState.SetState(appstate.StateError)
+		return err
+	}
+	fmt.Println(tags)
+	// init database
+	invent.DeleteAll()
+
+	// upload cabinet state to api
+	err = api.InitCabinet(appState.Token(), tags)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func main() {
 	// read configuration
 	config := config.Config{ConfFile: "config.toml"}
@@ -173,14 +202,10 @@ func main() {
 					// check for special codes
 					if bytes.Equal(recv, []byte(QR_INIT_CABINET+config.QRPass)) {
 						// ok, init cabinet
-						fmt.Println("Init cabinet!")
-						tags, err := ReadAllTags(rfid)
+						err := InitCabinet(appState, rfid, invent)
 						if err != nil {
-							fmt.Println("Error reading tags: ", err.Error())
-							appState.SetState(appstate.StateError)
-							break
+
 						}
-						fmt.Println(tags)
 						appState.SetState(appstate.StateWelcome)
 						break
 					}
