@@ -6,7 +6,7 @@ require (
 	fyne.io/fyne/v2 v2.6.3
 	github.com/BurntSushi/toml v1.4.0
 	github.com/ladecadence/EP9000 v0.0.0-20250513075850-f2d535206ddd
-	github.com/ladecadence/GoR200 v0.0.0-20250515112533-a6de8efb807b
+	github.com/ladecadence/GoR200 v0.0.0-20251002082308-544b31b45c05
 	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.26.1
 	periph.io/x/conn/v3 v3.7.2
@@ -15,7 +15,7 @@ require (
 
 require (
 	fyne.io/systray v1.11.0 // indirect
-	github.com/creack/goselect v0.1.2 // indirect
+	github.com/creack/goselect v0.1.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fredbi/uri v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
@@ -47,7 +47,7 @@ require (
 	go.bug.st/serial v1.6.4 // indirect
 	golang.org/x/image v0.24.0 // indirect
 	golang.org/x/net v0.35.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

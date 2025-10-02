@@ -53,6 +53,11 @@ func (i *Inventory) DeleteContainerByCode(code string) error {
 	return result.Error
 }
 
+func (i *Inventory) DeleteAll() error {
+	result := i.db.Exec("DELETE FROM containers")
+	return result.Error
+}
+
 func (i *Inventory) GetContainer(code string) (models.Container, error) {
 	var container models.Container
 	result := i.db.Where("code=?", code).First(&container)
