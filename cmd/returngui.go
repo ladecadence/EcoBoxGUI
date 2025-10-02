@@ -50,7 +50,7 @@ func main() {
 	fmt.Println(token)
 
 	// RFID reader
-	rfid, err := r200.New(config.RFIDPort, 115200, false)
+	rfid, err := r200.New(config.RFIDPort, 115200, 10, false)
 	if err != nil {
 		panic(err)
 	}
