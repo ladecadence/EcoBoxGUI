@@ -20,6 +20,7 @@ import (
 	"github.com/ladecadence/EcoBoxGUI/pkg/config"
 	"github.com/ladecadence/EcoBoxGUI/pkg/door"
 	"github.com/ladecadence/EcoBoxGUI/pkg/inventory"
+	"github.com/ladecadence/EcoBoxGUI/pkg/logging"
 	"github.com/ladecadence/EcoBoxGUI/pkg/screens"
 	r200 "github.com/ladecadence/GoR200"
 )
@@ -99,6 +100,13 @@ func InitCabinet(appState *appstate.AppState, rfid r200.R200, invent *inventory.
 }
 
 func main() {
+	// start log
+	log, err := logging.New("")
+	if err != nil {
+		panic(err)
+	}
+	log.Log(logging.LogInfo, "Starting...")
+
 	// read configuration
 	config := config.Config{ConfFile: "config.toml"}
 	config.GetConfig()
@@ -106,6 +114,7 @@ func main() {
 	// get auth token
 	token, err := api.GetToken()
 	if err != nil {
+		log.Log(logging.LogError, err.Error())
 		panic(err)
 	}
 	fmt.Println(token)
@@ -116,6 +125,7 @@ func main() {
 	// database
 	invent, err := inventory.New(config.Database)
 	if err != nil {
+		log.Log(logging.LogError, err.Error())
 		panic(err)
 	}
 
@@ -123,12 +133,14 @@ func main() {
 	qrData := make(chan []uint8)
 	scanner, err := ep9000.New(config.QRPort, 115200)
 	if err != nil {
+		log.Log(logging.LogError, err.Error())
 		panic(err)
 	}
 
 	// RFID reader
 	rfid, err := r200.New(config.RFIDPort, 115200, 25, false)
 	if err != nil {
+		log.Log(logging.LogError, err.Error())
 		panic(err)
 	}
 
@@ -148,6 +160,7 @@ func main() {
 	// get all containers from API for this cabinet
 	containers, err := api.GetContainers(appState.Token(), config.Cabinet)
 	if err != nil {
+		log.Log(logging.LogError, err.Error())
 		panic(err)
 	}
 	// store in local DB
@@ -158,6 +171,7 @@ func main() {
 	// Door
 	door, err := door.NewDoor(17, 27)
 	if err != nil {
+		log.Log(logging.LogError, err.Error())
 		panic(err)
 	}
 
@@ -179,6 +193,7 @@ func main() {
 		for {
 			err := scanner.Listen(qrData)
 			if err != nil {
+				log.Log(logging.LogError, err.Error())
 				panic(err)
 			}
 		}
