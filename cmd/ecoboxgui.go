@@ -98,7 +98,7 @@ func main() {
 	}
 
 	// RFID reader
-	rfid, err := r200.New(config.RFIDPort, 115200, false)
+	rfid, err := r200.New(config.RFIDPort, 115200, 25, false)
 	if err != nil {
 		panic(err)
 	}
