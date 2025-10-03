@@ -188,7 +188,7 @@ func main() {
 	}
 
 	// Leds
-	leds, err := led.NewLed(18)
+	leds, err := led.NewLed("/dev/serial0")
 	if err != nil {
 		log.Log(logging.LogError, err.Error())
 		panic(err)
