@@ -13,7 +13,7 @@ func NewLed(portFile string) (*Led, error) {
 
 	// prepare port
 	mode := &serial.Mode{
-		BaudRate: 115200,
+		BaudRate: 9600,
 		Parity:   serial.NoParity,
 		DataBits: 8,
 		StopBits: serial.OneStopBit,
