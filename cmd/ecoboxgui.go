@@ -22,6 +22,7 @@ import (
 	"github.com/ladecadence/EcoBoxGUI/pkg/inventory"
 	"github.com/ladecadence/EcoBoxGUI/pkg/logging"
 	"github.com/ladecadence/EcoBoxGUI/pkg/screens"
+	"github.com/ladecadence/EcoBoxGUI/pkg/sound"
 	r200 "github.com/ladecadence/GoR200"
 )
 
@@ -114,6 +115,10 @@ func main() {
 	// read configuration
 	config := config.Config{ConfFile: "config.toml"}
 	config.GetConfig()
+
+	// sound
+	sound := sound.New()
+	sound.Play()
 
 	// get auth token
 	token, err := api.GetToken()
@@ -290,7 +295,7 @@ func main() {
 					if err != nil {
 						// DB ERROR?
 					}
-					// remove the present tuppers so only removed tuppers remain
+					// remove the present containers so only removed tuppers remain
 					for _, t := range tags {
 						tag := hex.EncodeToString(t.EPC)
 						fmt.Println("Tag:", tag)
@@ -308,7 +313,7 @@ func main() {
 					// change state
 					appState.SetState(appstate.StateChecked)
 				case appstate.StateChecked:
-					// ok, remove tuppers from inventory if neccesary
+					// ok, remove containers from inventory if neccesary
 					if len(appState.ContainersTaken()) > 0 {
 						for _, t := range appState.ContainersTaken() {
 							invent.DeleteContainerByCode(t)
