@@ -20,6 +20,7 @@ import (
 	"github.com/ladecadence/EcoBoxGUI/pkg/config"
 	"github.com/ladecadence/EcoBoxGUI/pkg/door"
 	"github.com/ladecadence/EcoBoxGUI/pkg/inventory"
+	"github.com/ladecadence/EcoBoxGUI/pkg/led"
 	"github.com/ladecadence/EcoBoxGUI/pkg/logging"
 	"github.com/ladecadence/EcoBoxGUI/pkg/screens"
 	"github.com/ladecadence/EcoBoxGUI/pkg/sound"
@@ -186,6 +187,14 @@ func main() {
 		panic(err)
 	}
 
+	// Leds
+	leds, err := led.NewLed(18)
+	if err != nil {
+		log.Log(logging.LogError, err.Error())
+		panic(err)
+	}
+	leds.Normal()
+
 	// GUI
 	app := app.New()
 	app.Settings().SetTheme(theme.LightTheme())
@@ -220,6 +229,7 @@ func main() {
 				switch appState.State() {
 				case appstate.StateWelcome:
 					// start, welcome screen and listen for QR code
+					leds.Normal()
 					appState.ClearUser()
 					appState.DeleteContainers()
 					ChangeScreen(appState, mainWindow)
@@ -271,6 +281,7 @@ func main() {
 					for !door.IsOpen() {
 						time.Sleep(10 * time.Millisecond)
 					}
+					leds.DoorOpen()
 					// ok, change state
 					appState.SetState(appstate.StateOpened)
 				case appstate.StateUserError:
@@ -294,6 +305,7 @@ func main() {
 							sound.Play()
 						}
 					}
+					leds.Normal()
 					// ok, now we need to make the inventory
 					appState.SetState(appstate.StateClosed)
 				case appstate.StateClosed:
@@ -336,6 +348,7 @@ func main() {
 						err = api.AdquireContainers(token, appState.User().Code, config.Cabinet, appState.ContainersTaken())
 						if err != nil {
 							log.Log(logging.LogError, fmt.Sprintf("Error with adquire API: %s", err))
+							leds.Error()
 							appState.SetState(appstate.StateError)
 						}
 					}
