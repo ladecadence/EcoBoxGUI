@@ -105,7 +105,7 @@ func InitCabinet(appState *appstate.AppState, rfid r200.R200, invent *inventory.
 
 func main() {
 	// start log
-	log, err := logging.New("")
+	log, err := logging.New("log")
 	if err != nil {
 		panic(err)
 	}
