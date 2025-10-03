@@ -2,6 +2,7 @@ package sound
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"time"
 
@@ -61,9 +62,9 @@ func (s *Sound) Play() {
 		time.Sleep(time.Millisecond)
 	}
 
-	// If you don't want the player/sound anymore simply close
-	err := s.Player.Close()
+	// Now that the sound finished playing, we can restart from the beginning (or go to any location in the sound) using seek
+	_, err := s.Player.Seek(0, io.SeekStart)
 	if err != nil {
-		panic("player.Close failed: " + err.Error())
+		panic("player.Seek failed: " + err.Error())
 	}
 }
