@@ -299,6 +299,7 @@ func main() {
 							alarmTime = 0
 							sound.Play()
 							alarmStarted = true
+							leds.Error()
 						}
 						if (alarmStarted) && alarmTime > ALARM_REPEAT_TIME {
 							alarmTime = 0
