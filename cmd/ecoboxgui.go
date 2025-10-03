@@ -286,13 +286,11 @@ func main() {
 						alarmTime += 10
 						if (!alarmStarted) && alarmTime > ALARM_START_TIME {
 							alarmTime = 0
-							fmt.Println("Alarma!")
 							sound.Play()
 							alarmStarted = true
 						}
 						if (alarmStarted) && alarmTime > ALARM_REPEAT_TIME {
 							alarmTime = 0
-							fmt.Println("Alarma!")
 							sound.Play()
 						}
 					}
