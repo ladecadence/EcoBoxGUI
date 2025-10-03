@@ -27,8 +27,10 @@ import (
 )
 
 const (
-	QR_INIT_CABINET = "****INIT CABINET****"
-	QR_OPEN_DOOR    = "****OPEN DOOR****"
+	QR_INIT_CABINET   = "****INIT CABINET****"
+	QR_OPEN_DOOR      = "****OPEN DOOR****"
+	ALARM_START_TIME  = 10000
+	ALARM_REPEAT_TIME = 3000
 )
 
 func ReadAllTags(rfid r200.R200) ([]string, error) {
@@ -276,9 +278,21 @@ func main() {
 				case appstate.StateOpened:
 					api.Open(appState.Token(), appState.User().Name, config.Cabinet)
 					ChangeScreen(appState, mainWindow)
-					// ok wait for door to close
+					// ok wait for door to close, check if we need to play the alarm
+					alarmTime := 0
+					alarmStarted := false
 					for door.IsOpen() {
 						time.Sleep(10 * time.Millisecond)
+						alarmTime += 10
+						if (!alarmStarted) && alarmTime > ALARM_START_TIME {
+							alarmTime = 0
+							sound.Play()
+							alarmStarted = true
+						}
+						if (alarmStarted) && alarmTime > ALARM_REPEAT_TIME {
+							alarmTime = 0
+							sound.Play()
+						}
 					}
 					// ok, now we need to make the inventory
 					appState.SetState(appstate.StateClosed)
