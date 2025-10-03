@@ -70,11 +70,13 @@ func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 	}
 }
 
-func InitCabinet(appState *appstate.AppState, rfid r200.R200, invent *inventory.Inventory) error {
+func InitCabinet(appState *appstate.AppState, rfid r200.R200, invent *inventory.Inventory, log logging.Logging) error {
 	fmt.Println("Init cabinet!")
+	log.Log(logging.LogInfo, "Init cabinet!")
 	// get auth token
 	token, err := api.GetToken()
 	if err != nil {
+		log.Log(logging.LogError, fmt.Sprintf("Error getting token: %s", err))
 		appState.SetState(appstate.StateError)
 		return err
 	}
@@ -83,6 +85,7 @@ func InitCabinet(appState *appstate.AppState, rfid r200.R200, invent *inventory.
 	tags, err := ReadAllTags(rfid)
 	if err != nil {
 		fmt.Println("Error reading tags: ", err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error reading tags: %s", err))
 		appState.SetState(appstate.StateError)
 		return err
 	}
@@ -93,6 +96,7 @@ func InitCabinet(appState *appstate.AppState, rfid r200.R200, invent *inventory.
 	// upload cabinet state to api
 	err = api.InitCabinet(appState.Token(), tags)
 	if err != nil {
+		log.Log(logging.LogError, fmt.Sprintf("Error with API init: %s", err))
 		return err
 	}
 
@@ -204,6 +208,7 @@ func main() {
 		for {
 			if appState.StateChanged() {
 				fmt.Printf("New state: %d\n", appState.State())
+				log.Log(logging.LogInfo, fmt.Sprintf("New state: %d", appState.State()))
 				appState.StateClean() // aknowledged
 				switch appState.State() {
 				case appstate.StateWelcome:
@@ -217,7 +222,7 @@ func main() {
 					// check for special codes
 					if bytes.Equal(recv, []byte(QR_INIT_CABINET+config.QRPass)) {
 						// ok, init cabinet
-						err := InitCabinet(appState, rfid, invent)
+						err := InitCabinet(appState, rfid, invent, log)
 						if err != nil {
 
 						}
@@ -226,7 +231,8 @@ func main() {
 					}
 					if bytes.Equal(recv, []byte(QR_OPEN_DOOR+config.QRPass)) {
 						// ok, open door
-						fmt.Println("Open Door!")
+						fmt.Println("Open door with special QR.")
+						log.Log(logging.LogInfo, "Open door with special QR.")
 						door.Open()
 						appState.SetState(appstate.StateWelcome)
 						break
@@ -234,6 +240,7 @@ func main() {
 
 					// ok, no special codes, check user
 					fmt.Printf("QR Data: %s\n", recv)
+					log.Log(logging.LogInfo, fmt.Sprintf("QR Data: %s", recv))
 					// get auth token
 					token, err := api.GetToken()
 					if err != nil {
@@ -251,7 +258,7 @@ func main() {
 				case appstate.StateHello:
 					// hello and open door
 					ChangeScreen(appState, mainWindow)
-					time.Sleep(3 * time.Second)
+					time.Sleep(1 * time.Second)
 					door.Open()
 					// wait until the door is open
 					for !door.IsOpen() {
@@ -308,6 +315,7 @@ func main() {
 					// and from API
 					err = api.AdquireContainers(token, appState.User().Code, config.Cabinet, appState.ContainersTaken())
 					if err != nil {
+						log.Log(logging.LogError, fmt.Sprintf("Error with adquire API: %s", err))
 						appState.SetState(appstate.StateError)
 					}
 					ChangeScreen(appState, mainWindow)
