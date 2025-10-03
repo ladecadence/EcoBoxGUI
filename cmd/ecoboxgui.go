@@ -308,15 +308,17 @@ func main() {
 					// change state
 					appState.SetState(appstate.StateChecked)
 				case appstate.StateChecked:
-					// ok, remove tuppers from inventory
-					for _, t := range appState.ContainersTaken() {
-						invent.DeleteContainerByCode(t)
-					}
-					// and from API
-					err = api.AdquireContainers(token, appState.User().Code, config.Cabinet, appState.ContainersTaken())
-					if err != nil {
-						log.Log(logging.LogError, fmt.Sprintf("Error with adquire API: %s", err))
-						appState.SetState(appstate.StateError)
+					// ok, remove tuppers from inventory if neccesary
+					if len(appState.ContainersTaken()) > 0 {
+						for _, t := range appState.ContainersTaken() {
+							invent.DeleteContainerByCode(t)
+						}
+						// and from API
+						err = api.AdquireContainers(token, appState.User().Code, config.Cabinet, appState.ContainersTaken())
+						if err != nil {
+							log.Log(logging.LogError, fmt.Sprintf("Error with adquire API: %s", err))
+							appState.SetState(appstate.StateError)
+						}
 					}
 					ChangeScreen(appState, mainWindow)
 				case appstate.StateError:
