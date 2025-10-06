@@ -169,7 +169,7 @@ func main() {
 		panic(err)
 	}
 	// configure RFID demodulator
-	err = rfid.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_3dB, r200.IF_AMP_Gain_36dB, 0x00, 0xB0})
+	err = rfid.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_3dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0})
 	if err != nil {
 		log.Log(logging.LogError, err.Error())
 		panic(err)
