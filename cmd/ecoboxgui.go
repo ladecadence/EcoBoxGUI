@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"slices"
+	"sort"
 	"strings"
 	"time"
 
@@ -106,6 +107,7 @@ func InitCabinet(appState *appstate.AppState, rfid r200.R200, invent *inventory.
 		appState.SetState(appstate.StateError)
 		return err
 	}
+	sort.Strings(tags)
 	fmt.Println(tags)
 	// init database
 	invent.DeleteAll()
@@ -169,7 +171,7 @@ func main() {
 		panic(err)
 	}
 	// configure RFID demodulator
-	err = rfid.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_3dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0})
+	err = rfid.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_6dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0})
 	if err != nil {
 		log.Log(logging.LogError, err.Error())
 		panic(err)
