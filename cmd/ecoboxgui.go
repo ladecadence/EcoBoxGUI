@@ -45,6 +45,19 @@ func ReadAllTags(rfid r200.R200) ([]string, error) {
 		fmt.Println("Tag: ", hex.EncodeToString(r.EPC))
 		tags = append(tags, hex.EncodeToString(r.EPC))
 	}
+
+	// do it again after some delay and add new ones
+	time.Sleep(1 * time.Second)
+	responses, err = rfid.ReadTags()
+	if err != nil && responses == nil {
+		return nil, err
+	}
+	for _, r := range responses {
+		if !slices.Contains(tags, hex.EncodeToString(r.EPC)) {
+			fmt.Println("Tag: ", hex.EncodeToString(r.EPC))
+			tags = append(tags, hex.EncodeToString(r.EPC))
+		}
+	}
 	return tags, nil
 }
 
