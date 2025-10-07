@@ -92,6 +92,7 @@ func TestRead(appState *appstate.AppState, rfids []r200.R200, log logging.Loggin
 		return err
 	}
 	sort.Strings(tags)
+	fmt.Printf("Tag (%d): ", len(tags))
 	fmt.Println(tags)
 
 	return nil
@@ -147,7 +148,7 @@ func main() {
 	}
 	defer rfid.Close()
 	// configure RFID demodulator
-	err = rfid.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_6dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0})
+	err = rfid.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_3dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0})
 	if err != nil {
 		log.Log(logging.LogError, err.Error())
 		panic(err)
@@ -167,7 +168,7 @@ func main() {
 	}
 	defer rfid.Close()
 	// configure RFID demodulator
-	err = rfid2.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_6dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0})
+	err = rfid2.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_3dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0})
 	if err != nil {
 		log.Log(logging.LogError, err.Error())
 		panic(err)
