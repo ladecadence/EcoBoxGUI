@@ -35,29 +35,33 @@ const (
 	ALARM_REPEAT_TIME = 3000
 )
 
-func ReadAllTags(rfid r200.R200) ([]string, error) {
-	responses, err := rfid.ReadTags()
-	// we can have an error in one of the multiple reads but still get some data
-	if err != nil && responses == nil {
-		return nil, err
-	}
+func ReadAllTags(rfids []r200.R200) ([]string, error) {
 	var tags []string
-	for _, r := range responses {
-		fmt.Println("Tag: ", hex.EncodeToString(r.EPC))
-		tags = append(tags, hex.EncodeToString(r.EPC))
-	}
-
-	// do it again after some delay and add new ones
-	time.Sleep(1 * time.Second)
-	responses, err = rfid.ReadTags()
-	if err != nil && responses == nil {
-		return nil, err
-	}
-	for _, r := range responses {
-		if !slices.Contains(tags, hex.EncodeToString(r.EPC)) {
-			fmt.Println("Tag: ", hex.EncodeToString(r.EPC))
-			tags = append(tags, hex.EncodeToString(r.EPC))
+	for _, rfid := range rfids {
+		responses, err := rfid.ReadTags()
+		// we can have an error in one of the multiple reads but still get some data
+		if err != nil && responses == nil {
+			return nil, err
 		}
+		for _, r := range responses {
+			if !slices.Contains(tags, hex.EncodeToString(r.EPC)) {
+				fmt.Println("Tag: ", hex.EncodeToString(r.EPC))
+				tags = append(tags, hex.EncodeToString(r.EPC))
+			}
+		}
+
+		// do it again after some delay and add new ones
+		time.Sleep(1 * time.Second)
+		// responses, err = rfid.ReadTags()
+		// if err != nil && responses == nil {
+		// 	return nil, err
+		// }
+		// for _, r := range responses {
+		// 	if !slices.Contains(tags, hex.EncodeToString(r.EPC)) {
+		// 		fmt.Println("Tag: ", hex.EncodeToString(r.EPC))
+		// 		tags = append(tags, hex.EncodeToString(r.EPC))
+		// 	}
+		// }
 	}
 	return tags, nil
 }
@@ -88,7 +92,7 @@ func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 	}
 }
 
-func InitCabinet(appState *appstate.AppState, rfid r200.R200, invent *inventory.Inventory, log logging.Logging) error {
+func InitCabinet(appState *appstate.AppState, rfids []r200.R200, invent *inventory.Inventory, log logging.Logging) error {
 	fmt.Println("Init cabinet!")
 	log.Log(logging.LogInfo, "Init cabinet!")
 	// get auth token
@@ -100,7 +104,7 @@ func InitCabinet(appState *appstate.AppState, rfid r200.R200, invent *inventory.
 	}
 	appState.SetToken(token)
 	// RFID
-	tags, err := ReadAllTags(rfid)
+	tags, err := ReadAllTags(rfids)
 	if err != nil {
 		fmt.Println("Error reading tags: ", err.Error())
 		log.Log(logging.LogError, fmt.Sprintf("Error reading tags: %s", err))
@@ -164,7 +168,7 @@ func main() {
 		panic(err)
 	}
 
-	// RFID reader
+	// RFID readers
 	rfid, err := r200.New(config.RFIDPort, 115200, 25, false)
 	if err != nil {
 		log.Log(logging.LogError, err.Error())
@@ -183,8 +187,27 @@ func main() {
 	}
 	fmt.Printf("%v\n", rcv)
 
+	// second reader
+	rfid2, err := r200.New(config.RFIDPort2, 115200, 25, false)
+	if err != nil {
+		log.Log(logging.LogError, err.Error())
+		panic(err)
+	}
+	// configure RFID demodulator
+	err = rfid2.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_6dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0})
+	if err != nil {
+		log.Log(logging.LogError, err.Error())
+		panic(err)
+	}
+	rcv, err = rfid2.Receive()
+	if err != nil {
+		log.Log(logging.LogError, err.Error())
+		panic(err)
+	}
+	fmt.Printf("%v\n", rcv)
+
 	// Test reading all tags
-	err = InitCabinet(appState, rfid, invent, log)
+	err = InitCabinet(appState, []r200.R200{rfid, rfid2}, invent, log)
 	if err != nil {
 		log.Log(logging.LogError, err.Error())
 	}
@@ -261,7 +284,7 @@ func main() {
 					// check for special codes
 					if bytes.Equal(recv, []byte(QR_INIT_CABINET+config.QRPass)) {
 						// ok, init cabinet
-						err := InitCabinet(appState, rfid, invent, log)
+						err := InitCabinet(appState, []r200.R200{rfid, rfid2}, invent, log)
 						if err != nil {
 
 						}
