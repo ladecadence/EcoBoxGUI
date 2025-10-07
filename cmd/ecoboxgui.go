@@ -50,18 +50,8 @@ func ReadAllTags(rfids []r200.R200) ([]string, error) {
 			}
 		}
 
-		// do it again after some delay and add new ones
+		// do it for each reader after some delay to add new ones
 		time.Sleep(1 * time.Second)
-		// responses, err = rfid.ReadTags()
-		// if err != nil && responses == nil {
-		// 	return nil, err
-		// }
-		// for _, r := range responses {
-		// 	if !slices.Contains(tags, hex.EncodeToString(r.EPC)) {
-		// 		fmt.Println("Tag: ", hex.EncodeToString(r.EPC))
-		// 		tags = append(tags, hex.EncodeToString(r.EPC))
-		// 	}
-		// }
 	}
 	return tags, nil
 }
@@ -92,17 +82,7 @@ func ChangeScreen(a *appstate.AppState, main fyne.Window) {
 	}
 }
 
-func InitCabinet(appState *appstate.AppState, rfids []r200.R200, invent *inventory.Inventory, log logging.Logging) error {
-	fmt.Println("Init cabinet!")
-	log.Log(logging.LogInfo, "Init cabinet!")
-	// get auth token
-	token, err := api.GetToken()
-	if err != nil {
-		log.Log(logging.LogError, fmt.Sprintf("Error getting token: %s", err))
-		appState.SetState(appstate.StateError)
-		return err
-	}
-	appState.SetToken(token)
+func TestRead(appState *appstate.AppState, rfids []r200.R200, log logging.Logging) error {
 	// RFID
 	tags, err := ReadAllTags(rfids)
 	if err != nil {
@@ -113,15 +93,6 @@ func InitCabinet(appState *appstate.AppState, rfids []r200.R200, invent *invento
 	}
 	sort.Strings(tags)
 	fmt.Println(tags)
-	// init database
-	invent.DeleteAll()
-
-	// upload cabinet state to api
-	err = api.InitCabinet(appState.Token(), tags)
-	if err != nil {
-		log.Log(logging.LogError, fmt.Sprintf("Error with API init: %s", err))
-		return err
-	}
 
 	return nil
 }
@@ -207,7 +178,7 @@ func main() {
 	fmt.Printf("%v\n", rcv)
 
 	// Test reading all tags
-	err = InitCabinet(appState, []r200.R200{rfid, rfid2}, invent, log)
+	err = TestRead(appState, []r200.R200{rfid, rfid2}, log)
 	if err != nil {
 		log.Log(logging.LogError, err.Error())
 	}
@@ -284,7 +255,7 @@ func main() {
 					// check for special codes
 					if bytes.Equal(recv, []byte(QR_INIT_CABINET+config.QRPass)) {
 						// ok, init cabinet
-						err := InitCabinet(appState, []r200.R200{rfid, rfid2}, invent, log)
+						err := TestRead(appState, []r200.R200{rfid, rfid2}, log)
 						if err != nil {
 
 						}
