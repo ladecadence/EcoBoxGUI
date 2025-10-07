@@ -183,26 +183,15 @@ func main() {
 	}
 	fmt.Printf("%v\n", rcv)
 
-	// get all tags and store them in database (upsert)
-	// responses, err := rfid.ReadTags()
-	// for _, r := range responses {
-	// 	fmt.Println("Tag: ", hex.EncodeToString(r.EPC))
-	// 	tupper, err := api.GetTupper(hex.EncodeToString(r.EPC))
-	// 	if err != nil {
-	// 		// TODO
-	// 		continue
-	// 	}
-	// 	invent.InsertTupper(tupper)
-	// 	fmt.Printf("Start tupper: %s\n", tupper.ID)
-	// }
-
+	// init state, clear local DB
+	invent.DeleteAll()
 	// get all containers from API for this cabinet
 	containers, err := api.GetContainers(appState.Token(), config.Cabinet)
 	if err != nil {
 		log.Log(logging.LogError, err.Error())
 		panic(err)
 	}
-	// store in local DB
+	// and store them in local DB
 	for _, c := range containers {
 		invent.InsertContainer(c)
 	}
