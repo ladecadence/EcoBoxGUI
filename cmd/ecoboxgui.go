@@ -183,6 +183,12 @@ func main() {
 	}
 	fmt.Printf("%v\n", rcv)
 
+	// Test reading all tags
+	err = InitCabinet(appState, rfid, invent, log)
+	if err != nil {
+		log.Log(logging.LogError, err.Error())
+	}
+
 	// init state, clear local DB
 	invent.DeleteAll()
 	// get all containers from API for this cabinet
