@@ -332,7 +332,7 @@ func main() {
 					api.Close(appState.Token(), appState.User().Name, config.Cabinet)
 					ChangeScreen(appState, mainWindow)
 					// read tags
-					tags, err := rfid.ReadTags()
+					tags, err := ReadAllTags([]r200.R200{rfid, rfid2})
 					if err != nil {
 						// RFID ERROR SCREEN?
 					}
@@ -343,15 +343,15 @@ func main() {
 					}
 					// remove the present containers so only removed tuppers remain
 					for _, t := range tags {
-						tag := hex.EncodeToString(t.EPC)
-						fmt.Println("Tag:", tag)
+						fmt.Println("Tag:", t)
 						for i, container := range dbContainers {
-							if container.Code == tag {
+							if container.Code == t {
 								dbContainers = slices.Delete(dbContainers, i, i+1)
 							}
 						}
 					}
-					fmt.Println(dbContainers)
+					fmt.Printf("Contenedores retirados: %v", dbContainers)
+					log.Log(logging.LogInfo, fmt.Sprintf("Contenedores retirados: %v", dbContainers))
 					// add to state
 					for _, t := range dbContainers {
 						appState.AddContainer(t.Code)
