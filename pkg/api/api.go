@@ -24,11 +24,6 @@ const (
 	containersPath = "/api/contenedor/"
 )
 
-var testUsers = []models.User{
-	{ID: 0, Name: "Perico"},
-	{ID: 1, Name: "Manolo"},
-}
-
 type Token struct {
 	Type        string `json:"token_type"`
 	Expires     int    `json:"expires_in"`
