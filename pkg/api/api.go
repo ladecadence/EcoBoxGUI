@@ -52,6 +52,12 @@ type InventoryRequest struct {
 	Containers []models.Container `json:"contenedores"`
 }
 
+type AdquireAnswer struct {
+	Result     int                `json:"resultado"`
+	Code       int                `json:"codigo"`
+	Containers []models.Container `json:"contenedores"`
+}
+
 func GetToken() (*Token, error) {
 	// Form URL Encoded data
 	data := url.Values{}
@@ -315,7 +321,7 @@ func AdquireContainers(token *Token, user string, cabinet string, containers []s
 		return errors.New("Can't get adquire response body")
 	}
 
-	var answer models.Containers
+	var answer AdquireAnswer
 	if err := json.Unmarshal(body, &containers); err != nil {
 		return errors.New("Can't parse adquire response json")
 	}
