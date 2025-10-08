@@ -52,10 +52,16 @@ type InventoryRequest struct {
 	Containers []models.Container `json:"contenedores"`
 }
 
+type AdquireContainer struct {
+	Container string `json:"contenedor"`
+	Resultado int    `json:"resultado"`
+	Message   string `json:"mensaje"`
+}
+
 type AdquireAnswer struct {
 	Result     int                `json:"resultado"`
 	Code       int                `json:"codigo"`
-	Containers []models.Container `json:"contenedores"`
+	Containers []AdquireContainer `json:"contenedores"`
 }
 
 func GetToken() (*Token, error) {
@@ -282,11 +288,6 @@ func GetContainers(token *Token, cabinet string) ([]models.Container, error) {
 	}
 }
 
-func InitCabinet(token *Token, containers []string) error {
-
-	return nil
-}
-
 func AdquireContainers(token *Token, user string, cabinet string, containers []string) error {
 	// url
 	u, _ := url.ParseRequestURI(apiURL)
@@ -322,12 +323,18 @@ func AdquireContainers(token *Token, user string, cabinet string, containers []s
 	}
 
 	var answer AdquireAnswer
-	if err := json.Unmarshal(body, &containers); err != nil {
+	if err := json.Unmarshal(body, &answer); err != nil {
 		return errors.New("Can't parse adquire response json")
 	}
 
 	// check response
 	if answer.Result == 1 {
+		// check every container
+		for _, c := range answer.Containers {
+			if c.Resultado != 1 {
+				return fmt.Errorf("Problem adquiring container %s", c.Container)
+			}
+		}
 		return nil
 	} else {
 		fmt.Println(containers)
