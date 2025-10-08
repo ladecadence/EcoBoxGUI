@@ -317,7 +317,7 @@ func AdquireContainers(token *Token, user string, cabinet string, containers []s
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return errors.New("Can't parse adquire response body")
+		return errors.New("Can't get adquire response body")
 	}
 
 	var answer models.Containers
