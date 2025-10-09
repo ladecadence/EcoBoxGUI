@@ -126,6 +126,7 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(token)
+	log.Log(logging.LogInfo, "Obtained API token...")
 
 	// appState
 	appState := appstate.New("es", token)
@@ -133,7 +134,7 @@ func main() {
 	// database
 	invent, err := inventory.New(config.Database)
 	if err != nil {
-		log.Log(logging.LogError, err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error opening database: %s", err))
 		panic(err)
 	}
 
@@ -141,26 +142,26 @@ func main() {
 	qrData := make(chan []uint8)
 	scanner, err := ep9000.New(config.QRPort, 115200)
 	if err != nil {
-		log.Log(logging.LogError, err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error opening QR scanner: %s", err))
 		panic(err)
 	}
 
 	// RFID readers
 	rfid, err := r200.New(config.RFIDPort, 115200, 25, false)
 	if err != nil {
-		log.Log(logging.LogError, err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error opening RFID reader 1: %s", err))
 		panic(err)
 	}
 	defer rfid.Close()
 	// configure RFID demodulator
 	err = rfid.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_3dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0})
 	if err != nil {
-		log.Log(logging.LogError, err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 1: %s", err))
 		panic(err)
 	}
 	rcv, err := rfid.Receive()
 	if err != nil {
-		log.Log(logging.LogError, err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error reading answer from RFID 1: %s", err))
 		panic(err)
 	}
 	fmt.Printf("%v\n", rcv)
@@ -168,19 +169,19 @@ func main() {
 	// second reader
 	rfid2, err := r200.New(config.RFIDPort2, 115200, 25, false)
 	if err != nil {
-		log.Log(logging.LogError, err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error opening RFID reader 2: %s", err))
 		panic(err)
 	}
 	defer rfid.Close()
 	// configure RFID demodulator
 	err = rfid2.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_3dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0})
 	if err != nil {
-		log.Log(logging.LogError, err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 2: %s", err))
 		panic(err)
 	}
 	rcv, err = rfid2.Receive()
 	if err != nil {
-		log.Log(logging.LogError, err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error reading answer from RFID 2: %s", err))
 		panic(err)
 	}
 	fmt.Printf("%v\n", rcv)
@@ -188,7 +189,7 @@ func main() {
 	// Test reading all tags
 	err = TestRead(appState, []r200.R200{rfid, rfid2}, log)
 	if err != nil {
-		log.Log(logging.LogError, err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error reading tags: %s", err))
 	}
 
 	// init state, clear local DB
@@ -196,7 +197,7 @@ func main() {
 	// get all containers from API for this cabinet
 	containers, err := api.GetContainers(appState.Token(), config.Cabinet)
 	if err != nil {
-		log.Log(logging.LogError, err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error getting containers from API: %s", err))
 		panic(err)
 	}
 	// and store them in local DB
@@ -207,14 +208,14 @@ func main() {
 	// Door
 	door, err := door.NewDoor(17, 27)
 	if err != nil {
-		log.Log(logging.LogError, err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error with door GPIO: %s", err))
 		panic(err)
 	}
 
 	// Leds
 	leds, err := led.NewLed("/dev/serial0")
 	if err != nil {
-		log.Log(logging.LogError, err.Error())
+		log.Log(logging.LogError, fmt.Sprintf("Error opening LEDs serial port: %s", err))
 		panic(err)
 	}
 	leds.Normal()
@@ -237,7 +238,7 @@ func main() {
 		for {
 			err := scanner.Listen(qrData)
 			if err != nil {
-				log.Log(logging.LogError, err.Error())
+				log.Log(logging.LogError, fmt.Sprintf("Error launching QR reader thread: %s", err))
 				panic(err)
 			}
 		}
