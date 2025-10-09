@@ -202,8 +202,22 @@ func main() {
 	}
 	// and store them in local DB
 	for _, c := range containers {
-		invent.InsertContainer(c)
+		if c.Active == 1 && c.Available {
+			invent.InsertContainer(c)
+		}
 	}
+	// debug
+	containers, err = invent.GetContainers()
+	if err != nil {
+		log.Log(logging.LogError, fmt.Sprintf("Error getting containers from database: %s", err))
+		panic(err)
+	}
+	list := "Initial containers: "
+	for _, c := range containers {
+		list += c.Code
+		list += " "
+	}
+	log.Log(logging.LogData, list)
 
 	// Door
 	door, err := door.NewDoor(17, 27)
