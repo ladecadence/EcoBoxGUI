@@ -28,7 +28,7 @@ func NewError(a *appstate.AppState) *Error {
 	logo.FillMode = canvas.ImageFillOriginal
 	spacer := layout.NewSpacer()
 	spacer.Resize(fyne.NewSize(1000, 100))
-	h.labelError = canvas.NewText(languages.GetString("error.error", h.state.Lang()), theme.Color(theme.ColorNameForeground))
+	h.labelError = canvas.NewText((languages.GetString("error.error", h.state.Lang()))+a.Error(), theme.Color(theme.ColorNameForeground))
 	h.labelError.TextSize = 20
 	h.labelError.Alignment = fyne.TextAlignCenter
 	h.labelMsg = canvas.NewText(languages.GetString("error.msg", h.state.Lang()), theme.Color(theme.ColorNameForeground))
