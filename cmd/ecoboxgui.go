@@ -33,6 +33,11 @@ const (
 	QR_OPEN_DOOR      = "****OPEN DOOR****"
 	ALARM_START_TIME  = 10000
 	ALARM_REPEAT_TIME = 3000
+
+	APP_ERROR_RFID = "0000"
+	APP_ERROR_API  = "0001"
+	APP_ERROR_QR   = "0002"
+	APP_ERROR_DB   = "0003"
 )
 
 func ReadAllTags(rfids []r200.R200) ([]string, error) {
@@ -334,12 +339,21 @@ func main() {
 					// read tags
 					tags, err := ReadAllTags([]r200.R200{rfid, rfid2})
 					if err != nil {
-						// RFID ERROR SCREEN?
+						// RFID ERROR SCREEN
+						log.Log(logging.LogError, fmt.Sprintf("Error with RFID: %s", err))
+						leds.Error()
+						appState.SetError(APP_ERROR_RFID)
+						appState.SetState(appstate.StateError)
+						break
 					}
 					// check database
 					dbContainers, err := invent.GetContainers()
 					if err != nil {
-						// DB ERROR?
+						log.Log(logging.LogError, fmt.Sprintf("Error with database: %s", err))
+						leds.Error()
+						appState.SetError(APP_ERROR_DB)
+						appState.SetState(appstate.StateError)
+						break
 					}
 					// remove the present containers so only removed tuppers remain
 					for _, t := range tags {
@@ -369,6 +383,7 @@ func main() {
 						if err != nil {
 							log.Log(logging.LogError, fmt.Sprintf("Error with adquire API: %s", err))
 							leds.Error()
+							appState.SetError(APP_ERROR_API)
 							appState.SetState(appstate.StateError)
 						}
 					}

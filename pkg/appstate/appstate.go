@@ -26,11 +26,13 @@ type AppState struct {
 	token           *api.Token
 	stateChanged    bool
 	containersTaken []string
+	lastError       string
 }
 
 func New(lang string, token *api.Token) *AppState {
 	a := AppState{lang: lang, token: token, state: StateWelcome, stateChanged: false, user: nil}
 	a.containersTaken = []string{}
+	a.lastError = ""
 	return &a
 }
 
@@ -74,6 +76,14 @@ func (a *AppState) SetUser(u *models.User) {
 
 func (a *AppState) User() *models.User {
 	return a.user
+}
+
+func (a *AppState) Error() string {
+	return a.lastError
+}
+
+func (a *AppState) SetError(e string) {
+	a.lastError = e
 }
 
 func (a *AppState) ClearUser() {
