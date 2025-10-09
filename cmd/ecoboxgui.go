@@ -294,7 +294,7 @@ func main() {
 				case appstate.StateHello:
 					// hello and open door
 					ChangeScreen(appState, mainWindow)
-					time.Sleep(1 * time.Second)
+					time.Sleep(1500 * time.Millisecond)
 					door.Open()
 					// wait until the door is open
 					for !door.IsOpen() {
@@ -351,7 +351,7 @@ func main() {
 						}
 					}
 					fmt.Printf("Contenedores retirados: %v", dbContainers)
-					log.Log(logging.LogInfo, fmt.Sprintf("Contenedores retirados: %v", dbContainers))
+					log.Log(logging.LogInfo, fmt.Sprintf("Contenedores retirados: %v\n", dbContainers))
 					// add to state
 					for _, t := range dbContainers {
 						appState.AddContainer(t.Code)
