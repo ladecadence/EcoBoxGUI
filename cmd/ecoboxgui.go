@@ -42,7 +42,8 @@ const (
 
 func ReadAllTags(rfids []r200.R200) ([]string, error) {
 	var tags []string
-	for _, rfid := range rfids {
+	for i, rfid := range rfids {
+		fmt.Printf("Reading tags from RFID reader %d\n", i)
 		responses, err := rfid.ReadTags()
 		// we can have an error in one of the multiple reads but still get some data
 		if err != nil && responses == nil {
@@ -394,6 +395,15 @@ func main() {
 							invent.DeleteContainerByCode(t)
 						}
 						// and from API
+						// get auth token
+						token, err := api.GetToken()
+						if err != nil {
+							log.Log(logging.LogError, fmt.Sprintf("Error with adquire API: %s", err))
+							leds.Error()
+							appState.SetError(APP_ERROR_API)
+							appState.SetState(appstate.StateError)
+						}
+						appState.SetToken(token)
 						err = api.AdquireContainers(token, appState.User().Code, config.Cabinet, appState.ContainersTaken())
 						if err != nil {
 							log.Log(logging.LogError, fmt.Sprintf("Error with adquire API: %s", err))
