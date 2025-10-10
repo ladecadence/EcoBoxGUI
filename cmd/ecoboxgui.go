@@ -29,10 +29,11 @@ import (
 )
 
 const (
-	QR_INIT_CABINET   = "****INIT CABINET****"
-	QR_OPEN_DOOR      = "****OPEN DOOR****"
-	ALARM_START_TIME  = 10000
-	ALARM_REPEAT_TIME = 3000
+	QR_INIT_CABINET         = "****INIT CABINET****"
+	QR_OPEN_DOOR            = "****OPEN DOOR****"
+	ALARM_START_TIME        = 10000
+	ALARM_REPEAT_TIME       = 3000
+	ALARM_NOTIFICATION_TIME = 60000
 
 	APP_ERROR_RFID = "0000"
 	APP_ERROR_API  = "0001"
@@ -331,14 +332,18 @@ func main() {
 				case appstate.StateUserError:
 					ChangeScreen(appState, mainWindow)
 				case appstate.StateOpened:
-					api.Open(appState.Token(), appState.User().Name, config.Cabinet)
+					api.Open(appState.Token(), appState.User().Code, config.Cabinet)
 					ChangeScreen(appState, mainWindow)
-					// ok wait for door to close, check if we need to play the alarm
+					// ok wait for door to close, check if we need to play the alarm or send
+					// the notification of open door
 					alarmTime := 0
+					notificationTime := 0
 					alarmStarted := false
+					notificationSent := false
 					for door.IsOpen() {
 						time.Sleep(10 * time.Millisecond)
 						alarmTime += 10
+						notificationTime += 10
 						if (!alarmStarted) && alarmTime > ALARM_START_TIME {
 							alarmTime = 0
 							sound.Play()
@@ -349,12 +354,16 @@ func main() {
 							alarmTime = 0
 							sound.Play()
 						}
+						if (!notificationSent) && notificationTime > ALARM_NOTIFICATION_TIME {
+							notificationSent = true
+							api.DoorAlarm(appState.Token(), appState.User().Code, config.Cabinet)
+						}
 					}
 					leds.Normal()
 					// ok, now we need to make the inventory
 					appState.SetState(appstate.StateClosed)
 				case appstate.StateClosed:
-					api.Close(appState.Token(), appState.User().Name, config.Cabinet)
+					api.Close(appState.Token(), appState.User().Code, config.Cabinet)
 					ChangeScreen(appState, mainWindow)
 					// read tags
 					tags, err := ReadAllTags([]r200.R200{rfid, rfid2})
