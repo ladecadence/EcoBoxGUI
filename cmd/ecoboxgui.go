@@ -40,6 +40,10 @@ const (
 	APP_ERROR_DB   = "0003"
 )
 
+var (
+	rfidGainConfig = []uint8{r200.MIX_Gain_3dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0}
+)
+
 func ReadAllTags(rfids []r200.R200) ([]string, error) {
 	var tags []string
 	for i, rfid := range rfids {
@@ -155,7 +159,7 @@ func main() {
 	}
 	defer rfid.Close()
 	// configure RFID demodulator
-	err = rfid.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_3dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0})
+	err = rfid.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, rfidGainConfig)
 	if err != nil {
 		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 1: %s", err))
 		panic(err)
@@ -175,7 +179,7 @@ func main() {
 	}
 	defer rfid.Close()
 	// configure RFID demodulator
-	err = rfid2.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, []uint8{r200.MIX_Gain_3dB, r200.IF_AMP_Gain_40dB, 0x00, 0xB0})
+	err = rfid2.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, rfidGainConfig)
 	if err != nil {
 		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 2: %s", err))
 		panic(err)
@@ -375,7 +379,8 @@ func main() {
 					for _, t := range tags {
 						fmt.Println("Tag:", t)
 						for i, container := range dbContainers {
-							if container.Code == t {
+							// ignore caps on hex digits
+							if strings.EqualFold(container.Code, t) {
 								dbContainers = slices.Delete(dbContainers, i, i+1)
 							}
 						}
