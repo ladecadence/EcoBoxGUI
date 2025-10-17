@@ -286,8 +286,30 @@ func main() {
 						// ok, init cabinet
 						err := TestRead(appState, []r200.R200{rfid, rfid2}, log)
 						if err != nil {
-
+							log.Log(logging.LogError, "Error reading tags on init cabinet")
 						}
+						// ok, reinit DB
+						invent.DeleteAll()
+						// get current API container status
+						// get auth token
+						token, err = api.GetToken()
+						if err != nil {
+							log.Log(logging.LogError, err.Error())
+							panic(err)
+						}
+						appState.SetToken(token)
+						containers, err := api.GetContainers(appState.Token(), config.Cabinet)
+						if err != nil {
+							log.Log(logging.LogError, fmt.Sprintf("Error getting containers from API: %s", err))
+							panic(err)
+						}
+						// and store them in local DB
+						for _, c := range containers {
+							if c.Active == 1 && c.Available {
+								invent.InsertContainer(c)
+							}
+						}
+						// ok, start again
 						appState.SetState(appstate.StateWelcome)
 						break
 					}
@@ -356,7 +378,7 @@ func main() {
 						}
 						if (!notificationSent) && notificationTime > ALARM_NOTIFICATION_TIME {
 							notificationSent = true
-							api.DoorAlarm(appState.Token(), appState.User().Code, config.Cabinet)
+							api.DoorAlarm(appState.Token(), config.Cabinet)
 						}
 					}
 					leds.Normal()
