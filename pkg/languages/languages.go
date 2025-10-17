@@ -20,6 +20,7 @@ var eus = map[string]string{
 	"error.error":      "Sistemaren akatsa: ",
 	"error.msg":        "Mesedez, saiatu berriro",
 	"error.button":     "Ados",
+	"debug.button":     "Ados",
 }
 
 var es = map[string]string{
@@ -42,6 +43,7 @@ var es = map[string]string{
 	"error.error":      "Error del sistema: ",
 	"error.msg":        "Por favor inténtalo de nuevo",
 	"error.button":     "De acuerdo",
+	"debug.button":     "Aceptar",
 }
 
 var en = map[string]string{
@@ -64,6 +66,7 @@ var en = map[string]string{
 	"error.error":      "System error: ",
 	"error.msg":        "Please try again",
 	"error.button":     "Ok",
+	"debug.button":     "Ok",
 }
 
 func GetString(id string, lang string) string {
