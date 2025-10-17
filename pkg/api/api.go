@@ -19,7 +19,7 @@ const (
 	userPath       = "/api/usuario"
 	openPath       = "/api/armario/apertura"
 	closePath      = "/api/armario/cierre"
-	alarmPath      = "/api/armario/alarma"
+	alarmPath      = "/api/armario/alerta_no_cierre"
 	adquirePath    = "/api/contenedor/adquisicion"
 	returnPath     = "/api/contenedor/devolucion"
 	containersPath = "/api/contenedor/"
@@ -33,6 +33,10 @@ type Token struct {
 
 type UserRequest struct {
 	User    string `json:"usuario"`
+	Cabinet string `json:"armario"`
+}
+
+type CabinetRequest struct {
 	Cabinet string `json:"armario"`
 }
 
@@ -243,13 +247,13 @@ func Close(token *Token, id string, cabinet string) (models.Response, error) {
 	}
 }
 
-func DoorAlarm(token *Token, id string, cabinet string) (models.Response, error) {
+func DoorAlarm(token *Token, cabinet string) (models.Response, error) {
 	// url
 	u, _ := url.ParseRequestURI(apiURL)
 	u.Path = openPath
 
 	// body
-	userRequest := UserRequest{User: id, Cabinet: cabinet}
+	userRequest := CabinetRequest{Cabinet: cabinet}
 	jsonBody, err := json.Marshal(userRequest)
 	if err != nil {
 		return models.Response{}, errors.New("Problem encoding alarm request")
