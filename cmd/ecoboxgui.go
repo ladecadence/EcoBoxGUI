@@ -164,7 +164,7 @@ func main() {
 	}
 	defer rfid.Close()
 	// query params
-	err = rfid.SendCommand(r200.CMD_SetQueryParameters, []uint8{0x10, 0x18})
+	err = rfid.SendCommand(r200.CMD_SetQueryParameters, []uint8{0x10, 0x28})
 	if err != nil {
 		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 1: %s", err))
 		panic(err)
@@ -196,7 +196,7 @@ func main() {
 	}
 	defer rfid.Close()
 	// query params
-	err = rfid2.SendCommand(r200.CMD_GetQueryParameters, []uint8{})
+	err = rfid2.SendCommand(r200.CMD_SetQueryParameters, []uint8{0x10, 0x28})
 	if err != nil {
 		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 2: %s", err))
 		panic(err)
