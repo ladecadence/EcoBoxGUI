@@ -157,7 +157,7 @@ func main() {
 	}
 
 	// RFID readers
-	rfid, err := r200.New(config.RFIDPort, 115200, 25, false)
+	rfid, err := r200.New(config.RFIDPort, 115200, 35, false)
 	if err != nil {
 		log.Log(logging.LogError, fmt.Sprintf("Error opening RFID reader 1: %s", err))
 		panic(err)
@@ -177,7 +177,7 @@ func main() {
 	fmt.Printf("%v\n", rcv)
 
 	// second reader
-	rfid2, err := r200.New(config.RFIDPort2, 115200, 25, false)
+	rfid2, err := r200.New(config.RFIDPort2, 115200, 35, false)
 	if err != nil {
 		log.Log(logging.LogError, fmt.Sprintf("Error opening RFID reader 2: %s", err))
 		panic(err)
