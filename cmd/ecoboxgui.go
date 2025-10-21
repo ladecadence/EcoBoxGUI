@@ -163,8 +163,8 @@ func main() {
 		panic(err)
 	}
 	defer rfid.Close()
-	// region
-	err = rfid.SendCommand(0x08, []uint8{})
+	// power
+	err = rfid.SendCommand(r200.CMD_AcquireTransmitPower, []uint8{})
 	if err != nil {
 		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 1: %s", err))
 		panic(err)
@@ -195,8 +195,8 @@ func main() {
 		panic(err)
 	}
 	defer rfid.Close()
-	// region
-	err = rfid2.SendCommand(0x08, []uint8{})
+	// power
+	err = rfid2.SendCommand(r200.CMD_AcquireTransmitPower, []uint8{})
 	if err != nil {
 		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 2: %s", err))
 		panic(err)
