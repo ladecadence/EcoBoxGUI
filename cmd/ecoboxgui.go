@@ -163,8 +163,8 @@ func main() {
 		panic(err)
 	}
 	defer rfid.Close()
-	// power
-	err = rfid.SendCommand(r200.CMD_GetQueryParameters, []uint8{})
+	// query params
+	err = rfid.SendCommand(r200.CMD_SetQueryParameters, []uint8{0x10, 0x18})
 	if err != nil {
 		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 1: %s", err))
 		panic(err)
