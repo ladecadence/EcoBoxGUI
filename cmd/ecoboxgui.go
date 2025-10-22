@@ -176,12 +176,8 @@ func main() {
 	qrData := make(chan []uint8)
 	scanner, err := ep9000.New(config.QRPort, 115200)
 	if err != nil {
-		// try to open next port
-		scanner, err = ep9000.New("/dev/ttyACM1", 115200)
-		if err != nil {
-			log.Log(logging.LogError, fmt.Sprintf("Error opening QR scanner: %s", err))
-			panic(err)
-		}
+		log.Log(logging.LogError, fmt.Sprintf("Error opening QR scanner: %s", err))
+		panic(err)
 	}
 
 	// RFID readers
