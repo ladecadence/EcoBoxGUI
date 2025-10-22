@@ -109,6 +109,34 @@ func TestRead(appState *appstate.AppState, rfids []r200.R200, log logging.Loggin
 	return nil
 }
 
+func ConfigureRFID(rfid r200.R200, log logging.Logging) error {
+	// query params
+	err := rfid.SendCommand(r200.CMD_SetQueryParameters, []uint8{0x10, 0x28})
+	if err != nil {
+		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID: %s", err))
+		panic(err)
+	}
+	rcv, err := rfid.Receive()
+	if err != nil {
+		log.Log(logging.LogError, fmt.Sprintf("Error reading answer from RFID: %s", err))
+		panic(err)
+	}
+	fmt.Printf("Query params 1: %v\n", rcv)
+	// RFID demodulator
+	err = rfid.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, rfidGainConfig)
+	if err != nil {
+		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID: %s", err))
+		panic(err)
+	}
+	rcv, err = rfid.Receive()
+	if err != nil {
+		log.Log(logging.LogError, fmt.Sprintf("Error reading answer from RFID: %s", err))
+		panic(err)
+	}
+	fmt.Printf("Demodulator: %v\n", rcv)
+	return err
+}
+
 func main() {
 	// start log
 	log, err := logging.New("log")
@@ -163,30 +191,12 @@ func main() {
 		panic(err)
 	}
 	defer rfid.Close()
-	// query params
-	err = rfid.SendCommand(r200.CMD_SetQueryParameters, []uint8{0x10, 0x28})
+	// configure receiver
+	err = ConfigureRFID(rfid, log)
 	if err != nil {
-		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 1: %s", err))
+		log.Log(logging.LogError, fmt.Sprintf("Error configuring RFID reader: %s", err))
 		panic(err)
 	}
-	rcv, err := rfid.Receive()
-	if err != nil {
-		log.Log(logging.LogError, fmt.Sprintf("Error reading answer from RFID 1: %s", err))
-		panic(err)
-	}
-	fmt.Printf("Query params 1: %v\n", rcv)
-	// configure RFID demodulator
-	err = rfid.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, rfidGainConfig)
-	if err != nil {
-		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 1: %s", err))
-		panic(err)
-	}
-	rcv, err = rfid.Receive()
-	if err != nil {
-		log.Log(logging.LogError, fmt.Sprintf("Error reading answer from RFID 1: %s", err))
-		panic(err)
-	}
-	fmt.Printf("Demodulator 1: %v\n", rcv)
 
 	// second reader
 	rfid2, err := r200.New(config.RFIDPort2, 115200, 35, false)
@@ -195,30 +205,12 @@ func main() {
 		panic(err)
 	}
 	defer rfid.Close()
-	// query params
-	err = rfid2.SendCommand(r200.CMD_SetQueryParameters, []uint8{0x10, 0x28})
+	// configure receiver
+	err = ConfigureRFID(rfid2, log)
 	if err != nil {
-		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 2: %s", err))
+		log.Log(logging.LogError, fmt.Sprintf("Error configuring RFID reader: %s", err))
 		panic(err)
 	}
-	rcv, err = rfid2.Receive()
-	if err != nil {
-		log.Log(logging.LogError, fmt.Sprintf("Error reading answer from RFID 2: %s", err))
-		panic(err)
-	}
-	fmt.Printf("Query params 2: %v\n", rcv)
-	// configure RFID demodulator
-	err = rfid2.SendCommand(r200.CMD_SetReceiverDemodulatorParameters, rfidGainConfig)
-	if err != nil {
-		log.Log(logging.LogError, fmt.Sprintf("Error sending command to RFID 2: %s", err))
-		panic(err)
-	}
-	rcv, err = rfid2.Receive()
-	if err != nil {
-		log.Log(logging.LogError, fmt.Sprintf("Error reading answer from RFID 2: %s", err))
-		panic(err)
-	}
-	fmt.Printf("Demodulator 2: %v\n", rcv)
 
 	// Test reading all tags
 	err = TestRead(appState, []r200.R200{rfid, rfid2}, log)
