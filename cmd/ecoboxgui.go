@@ -137,6 +137,16 @@ func ConfigureRFID(rfid r200.R200, log logging.Logging) error {
 	return err
 }
 
+func QRCleanup(data []uint8) []uint8 {
+	// separate by lines
+	lines := bytes.Split(data, []uint8("\n"))
+
+	// clean all whitespace from line 0
+	cleanData := bytes.Trim(lines[0], "\r\t\n")
+
+	return cleanData
+}
+
 func main() {
 	// start log
 	log, err := logging.New("log")
@@ -295,7 +305,8 @@ func main() {
 					appState.DeleteContainers()
 					ChangeScreen(appState, mainWindow)
 					recv := <-qrData
-					recv = bytes.Trim(recv, "\n\r")
+					// clean received data
+					recv = QRCleanup(recv)
 
 					// check for special codes
 					if bytes.Equal(recv, []byte(QR_INIT_CABINET+config.QRPass)) {
