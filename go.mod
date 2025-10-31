@@ -7,7 +7,7 @@ require (
 	github.com/BurntSushi/toml v1.5.0
 	github.com/ebitengine/oto/v3 v3.4.0
 	github.com/hajimehoshi/go-mp3 v0.3.4
-	github.com/ladecadence/EP9000 v0.0.0-20250513075850-f2d535206ddd
+	github.com/ladecadence/EP9000 v0.0.0-20251031100234-ea276b5130d5
 	github.com/ladecadence/GoR200 v0.0.0-20251006131549-34c1c8f74163
 	go.bug.st/serial v1.6.4
 	gorm.io/driver/sqlite v1.6.0
@@ -39,7 +39,6 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jsummers/gobmp v0.0.0-20230614200233-a9de23ed2e25 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/ladecadence/GoR200 v0.0.0-20251006131549-34c1c8f74163 // indirect
 	github.com/mattn/go-sqlite3 v1.14.32 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.6.0 // indirect
@@ -51,7 +50,7 @@ require (
 	github.com/yuin/goldmark v1.7.13 // indirect
 	golang.org/x/image v0.31.0 // indirect
 	golang.org/x/net v0.44.0 // indirect
-	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

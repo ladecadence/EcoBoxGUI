@@ -361,8 +361,13 @@ func main() {
 
 					user, err := api.GetUser(appState.Token(), strings.TrimSpace(string(recv)), config.Cabinet)
 					if err != nil {
+						// error, clear QR buffer (can contain bad data)
+						scanner.Flush()
 						appState.SetState(appstate.StateUserError)
 					} else {
+						// clear more possible QR data
+						scanner.Flush()
+						// ok, identify
 						appState.SetUser(&user)
 						appState.SetState(appstate.StateHello)
 					}
