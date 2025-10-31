@@ -42,7 +42,7 @@ const (
 )
 
 var (
-	rfidGainConfig = []uint8{r200.MIX_Gain_3dB, r200.IF_AMP_Gain_36dB, 0x00, 0xA0}
+	rfidGainConfig = []uint8{r200.MIX_Gain_3dB, r200.IF_AMP_Gain_40dB, 0x00, 0xA0}
 )
 
 func ReadAllTags(rfids []r200.R200) ([]string, error) {
